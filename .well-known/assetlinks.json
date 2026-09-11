@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.kewat512.twa",
+        "sha256_cert_fingerprints": ["E7:83:01:FB:9B:70:8D:71:F2:23:CF:51:B4:67:C8:2F:E0:F5:4E:31:22:C8:A3:25:1F:20:A7:1C:8C:F6:81:CC"]
+      }
+    }]
