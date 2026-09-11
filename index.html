@@ -1,0 +1,3042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0d0e12">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Abhi'S Cube — Learn to Solve, Understand, and Speedsolve</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0e12; --surface:#171a20; --surface2:#1e222a; --surface3:#272c37;
+  --border:#2c303a; --text:#eceef2; --dim:#8b90a0; --dim2:#5c6272;
+  --accent:#f5b942; --accent2:#ff8a3d; --accent-dim:#7a5f28;
+  --accent-grad:linear-gradient(135deg,#ffcf6b,#f5b942 45%,#ff8a3d);
+  --c-white:#f4f4f0; --c-yellow:#ffd400; --c-red:#d7263d; --c-orange:#ff7a1a;
+  --c-green:#1f9d55; --c-blue:#2166d1; --c-core:#08090b;
+  --good:#3ecf8e; --warn:#e0714a; --serif:'Fraunces',Charter,'Iowan Old Style',Georgia,serif;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --mono:'JetBrains Mono','SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;
+  --shadow-soft:0 10px 30px -12px rgba(0,0,0,.55);
+  --shadow-lift:0 16px 40px -14px rgba(0,0,0,.65);
+  --glass:rgba(255,255,255,.02);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:hidden;width:100%;}
+body{
+  -webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(1100px 620px at 14% -8%, rgba(245,185,66,.10), transparent 60%),
+    radial-gradient(900px 700px at 100% 0%, rgba(33,102,209,.10), transparent 55%),
+    radial-gradient(1200px 900px at 50% 120%, rgba(31,157,85,.06), transparent 60%),
+    var(--bg);
+  background-attachment:fixed;
+}
+/* background-attachment:fixed forces the browser to repaint the background
+   on every single scroll frame on most phones (iOS Safari and a lot of
+   Android WebViews don't composite it as its own layer) — a well-known
+   cause of scroll stutter/scroll-appears-frozen bugs. Desktop keeps the
+   subtle fixed parallax; mobile just scrolls it normally, which is free. */
+@media(max-width:900px){ body{background-attachment:scroll;} }
+body.no-scroll{overflow:hidden;}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;letter-spacing:-0.01em;margin:0 0 .4em;}
+p{line-height:1.55;color:var(--text);margin:.4em 0;}
+a{color:var(--accent);}
+button{font-family:var(--sans);cursor:pointer;touch-action:manipulation;}
+.dim{color:var(--dim);}
+::selection{background:var(--accent-dim);}
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+
+/* ---------- layout shell ---------- */
+#app{display:flex;min-height:100vh;}
+#sidebar{
+  width:264px;flex:0 0 264px;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,0) 220px),var(--surface);
+  border-right:1px solid var(--border);
+  padding:18px 12px 90px;position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+#sidebar .brand{padding:10px 10px 22px;border-bottom:1px solid var(--border);margin-bottom:10px;}
+#sidebar .brand .brand-row{display:flex;align-items:center;gap:11px;}
+.sound-toggle-btn{
+  margin-left:auto;width:32px;height:32px;border-radius:50%;border:1px solid var(--border);
+  background:var(--surface2);font-size:.95rem;line-height:1;cursor:pointer;flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s;
+}
+.sound-toggle-btn:hover{border-color:var(--accent-dim);background:var(--surface3);}
+#sidebar .brand .brand-badge{
+  width:36px;height:36px;flex:0 0 auto;border-radius:10px;background:var(--accent-grad);
+  display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;
+  font-size:1.05rem;color:#231a05;box-shadow:0 6px 16px -6px rgba(245,185,66,.6);
+}
+#sidebar .brand .mark{font-family:var(--serif);font-size:1.32rem;font-weight:700;color:var(--text);letter-spacing:-.01em;line-height:1.15;}
+#sidebar .brand .mark span{background:var(--accent-grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+#sidebar .brand .tag{font-size:.76rem;color:var(--dim);margin-top:9px;line-height:1.45;letter-spacing:.01em;}
+.navgroup{margin-bottom:6px;}
+.navgroup-title{font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim2);padding:16px 12px 6px;font-weight:600;}
+.navitem{
+  display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:9px;font-size:.88rem;
+  color:var(--dim);cursor:pointer;user-select:none;transition:background .15s, color .15s, transform .15s;
+  position:relative;
+}
+.navitem:hover{background:var(--surface2);color:var(--text);transform:translateX(1px);}
+.navitem.active{background:linear-gradient(90deg,rgba(245,185,66,.14),rgba(245,185,66,.03));color:var(--text);font-weight:600;box-shadow:inset 2px 0 0 var(--accent);}
+.navitem .dot{width:6px;height:6px;border-radius:50%;background:var(--dim2);flex:0 0 auto;transition:background .15s,box-shadow .15s;}
+.navitem.active .dot{background:var(--accent);box-shadow:0 0 8px 1px rgba(245,185,66,.7);}
+#menuBtn{display:none;}
+/* mobile top bar + drawer backdrop — hidden entirely on desktop, only
+   activated inside the max-width:900px block below */
+#mobileTopbar{display:none;}
+#sidebarBackdrop{display:none;}
+
+#main{flex:1;min-width:0;padding:26px 34px 90px;max-width:1180px;}
+.section{display:none;}
+.section.active{display:block;animation:fadein .25s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.eyebrow{font-size:.72rem;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px;font-weight:700;}
+.section > h1{font-size:1.85rem;margin-bottom:.25em;letter-spacing:-.015em;}
+.section-intro{color:var(--dim);max-width:640px;margin-bottom:22px;font-size:.98rem;}
+
+/* ---------- cards ---------- */
+.card{background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,0) 60%),var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:16px;box-shadow:var(--shadow-soft);}
+.card h3{font-size:1.05rem;margin-bottom:.3em;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+@media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+.btn{
+  background:var(--surface3);color:var(--text);border:1px solid var(--border);border-radius:9px;
+  padding:8px 14px;font-size:.85rem;font-weight:500;transition:background .12s,border-color .12s,transform .12s,box-shadow .12s;
+}
+.btn:hover{background:#323848;border-color:#3a4152;transform:translateY(-1px);box-shadow:0 4px 14px -6px rgba(0,0,0,.5);}
+.btn:active{transform:translateY(0);}
+.btn.primary{background:var(--accent-grad);color:#231a05;border-color:transparent;font-weight:700;box-shadow:0 6px 18px -8px rgba(245,185,66,.55);}
+.btn.primary:hover{filter:brightness(1.07);box-shadow:0 8px 22px -8px rgba(245,185,66,.7);}
+.btn.small{padding:5px 10px;font-size:.78rem;}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+
+.pill{display:inline-block;padding:2px 9px;border-radius:100px;font-size:.7rem;font-weight:600;letter-spacing:.02em;background:var(--surface3);color:var(--dim);}
+.pill.on{background:rgba(245,185,66,.16);color:var(--accent);}
+.pill.good{background:rgba(62,207,142,.16);color:var(--good);}
+.pill.warn{background:rgba(224,113,74,.16);color:var(--warn);}
+
+.moves{font-family:var(--mono);font-size:1.02rem;letter-spacing:.03em;color:var(--text);}
+.moves .mv{display:inline-block;padding:2px 6px;margin:1px 2px;border-radius:5px;background:var(--surface2);}
+.moves .mv.current{background:var(--accent);color:#231a05;}
+.moves .mv.done{color:var(--dim2);}
+.moves.algo-hidden{display:none;}
+.algo-hide-hint{display:none;color:var(--dim2);font-style:italic;font-size:.88rem;padding:4px 0;}
+.algo-hide-hint.show{display:block;}
+.algo-toggle-row{margin-bottom:6px;}
+.moves.moves-grouped{display:flex;flex-wrap:wrap;align-items:center;gap:2px 4px;}
+.mv-group{display:inline-flex;align-items:center;background:rgba(var(--trig-c),.12);border:1px solid rgba(var(--trig-c),.35);border-radius:8px;padding:1px 5px;margin:1px 2px;}
+.mv-group .mv{background:transparent;margin:0 1px;padding:2px 3px;color:rgb(var(--trig-c));font-weight:700;}
+.mv-group .mv.current{background:rgb(var(--trig-c));color:#111;border-radius:5px;}
+.mv-group .mv.done{opacity:.55;}
+.trigger-inline-pill{display:inline-flex;align-items:center;padding:3px 10px;margin:1px 2px;border-radius:100px;
+  font-size:.68rem;font-weight:700;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;cursor:pointer;
+  background:rgba(var(--trig-c),.16);color:rgb(var(--trig-c));border:1px solid rgba(var(--trig-c),.3);
+  transition:background .15s,border-color .15s;
+}
+.trigger-inline-pill:hover{background:rgba(var(--trig-c),.28);}
+
+/* ---------- cube net ---------- */
+.cube-panel{
+  background:radial-gradient(600px 300px at 20% 0%, rgba(245,185,66,.05), transparent 60%),var(--surface);
+  border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px;box-shadow:var(--shadow-lift);
+}
+.cube-wrap{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start;}
+
+/* view toggle tabs */
+.view-toggle{display:inline-flex;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:3px;gap:2px;margin-bottom:12px;}
+.view-toggle button{background:transparent;border:none;color:var(--dim);font-size:.78rem;font-weight:600;padding:6px 12px;border-radius:7px;transition:background .15s,color .15s;}
+.view-toggle button.active{background:var(--accent-grad);color:#231a05;}
+.view-toggle button:not(.active):hover{color:var(--text);}
+.cube-visual{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;}
+.drag-hint{font-size:.72rem;color:var(--dim2);text-align:center;margin-top:8px;letter-spacing:.02em;}
+.view-toggle-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.reset-view-btn{background:var(--surface2);border:1px solid var(--border);color:var(--dim);border-radius:7px;padding:6px 9px;font-size:.85rem;transition:color .12s,background .12s;}
+.reset-view-btn:hover{color:var(--text);background:var(--surface3);}
+
+.net{
+  display:grid;grid-template-columns:repeat(12,20px);grid-template-rows:repeat(9,20px);gap:2px;
+  flex:0 0 auto;
+}
+@media(max-width:520px){
+  .net{grid-template-columns:repeat(12,17px);grid-template-rows:repeat(9,17px);}
+}
+.sticker{
+  border-radius:3px;position:relative;transition:transform .15s, box-shadow .15s;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.25);
+}
+.sticker.hl{animation:pop .55s ease;box-shadow:0 0 0 2px var(--accent),inset 0 0 0 1px rgba(0,0,0,.25);}
+@keyframes pop{0%{transform:scale(1);}35%{transform:scale(1.16);}100%{transform:scale(1);}}
+.sticker.blank{visibility:hidden;}
+.col-U{background:var(--c-yellow);} .col-D{background:var(--c-white);}
+.col-F{background:var(--c-green);} .col-B{background:var(--c-blue);}
+.col-L{background:var(--c-orange);} .col-R{background:var(--c-red);}
+
+.mini-net-wrap{flex:0 0 auto;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px;}
+.mini-net{display:grid;grid-template-columns:repeat(12,7px);grid-template-rows:repeat(9,7px);gap:1px;}
+.mini-net .sticker{border-radius:1px;box-shadow:none;}
+/* small static 3D cube — still used for the single case now open in the
+   case player (buildCaseInteractive), not for grid thumbnails anymore. */
+.mini-cube3d-wrap{
+  width:86px;height:86px;flex:0 0 auto;position:relative;overflow:hidden;
+  background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+}
+.mini-cube3d-wrap .cube3d-scene{
+  position:absolute;top:52%;left:50%;width:260px;height:260px;
+  transform:translate(-50%,-50%) scale(.335);transform-origin:center center;
+  pointer-events:none;cursor:default;
+}
+.mini-cube3d-wrap .cube3d-scene::after{content:none;}
+.group-header{margin:22px 0 8px;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);border-bottom:1px solid var(--border);padding-bottom:6px;}
+.group-header:first-child{margin-top:4px;}
+
+/* ---------- 3D cube (cubie-based, physically animated) ---------- */
+.cube3d-scene{
+  width:260px;height:260px;perspective:1000px;flex:0 0 auto;margin:0 auto;
+  touch-action:none;cursor:grab;position:relative;
+}
+.cube3d-scene::after{
+  content:'';position:absolute;left:50%;bottom:14px;width:150px;height:26px;
+  transform:translateX(-50%);border-radius:50%;
+  background:radial-gradient(ellipse at center, rgba(0,0,0,.35), rgba(0,0,0,0) 70%);
+  pointer-events:none;
+}
+.cube3d-scene:active{cursor:grabbing;}
+.cube3d{
+  width:100%;height:100%;position:relative;transform-style:preserve-3d;
+  transform:rotateX(-24deg) rotateY(-34deg);
+  transition:transform .08s linear;
+  will-change:transform;
+}
+.cube3d.spinning{transition:none;}
+.cubie-layer{position:absolute;inset:0;transform-style:preserve-3d;}
+.cubie-anchor{position:absolute;top:50%;left:50%;width:0;height:0;transform-style:preserve-3d;}
+.turn-pivot{position:absolute;top:50%;left:50%;width:0;height:0;transform-style:preserve-3d;will-change:transform;}
+.cubie{position:absolute;width:46px;height:46px;left:-23px;top:-23px;transform-style:preserve-3d;}
+.cubie-face{
+  position:absolute;width:46px;height:46px;background-color:var(--c-core);
+  border-radius:6px;box-shadow:0 0 0 1px rgba(0,0,0,.55);
+}
+.cubie-face.cf-front{transform:translateZ(23px);}
+.cubie-face.cf-back{transform:rotateY(180deg) translateZ(23px);}
+.cubie-face.cf-right{transform:rotateY(90deg) translateZ(23px);}
+.cubie-face.cf-left{transform:rotateY(-90deg) translateZ(23px);}
+.cubie-face.cf-top{transform:rotateX(90deg) translateZ(23px);}
+.cubie-face.cf-bottom{transform:rotateX(-90deg) translateZ(23px);}
+/* per-facet ambient shading so unlit sides read as physically lit, not flat */
+.cubie-face.cf-right,.cubie-face.cf-left{background-image:linear-gradient(rgba(0,0,0,.14),rgba(0,0,0,.14));}
+.cubie-face.cf-top{background-image:linear-gradient(rgba(255,255,255,.08),rgba(255,255,255,.08));}
+.cubie-face.cf-bottom,.cubie-face.cf-back{background-image:linear-gradient(rgba(0,0,0,.26),rgba(0,0,0,.26));}
+.cubie-sticker{
+  position:absolute;inset:3px;border-radius:4px;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.3), inset 0 3px 4px rgba(255,255,255,.3), inset 0 -4px 5px rgba(0,0,0,.2);
+  transition:transform .15s;
+}
+.cubie-sticker.hl{animation:pop3d .6s ease;box-shadow:0 0 0 2px var(--accent), inset 0 0 0 1px rgba(0,0,0,.3);}
+@keyframes pop3d{0%{transform:scale(1);}35%{transform:scale(1.14);}100%{transform:scale(1);}}
+.cube-controls{flex:1;min-width:260px;}
+.movepad{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:10px;}
+.movepad button{padding:8px 0;border-radius:7px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.85rem;transition:background .12s,transform .1s;}
+.movepad button:hover{background:var(--surface3);transform:translateY(-1px);}
+.cube-status{font-size:.8rem;color:var(--dim);margin-top:8px;min-height:1.2em;}
+.cube-status.solved{color:var(--good);font-weight:600;}
+
+/* algorithm player */
+.algo-block{border:1px solid var(--border);border-radius:10px;padding:14px 16px;background:var(--surface2);margin:10px 0;}
+.algo-header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;}
+.algo-name{font-weight:700;font-size:.95rem;}
+.step-caption{font-size:.8rem;color:var(--dim);min-height:1.4em;margin-top:6px;}
+
+.why-btn{background:none;border:1px solid var(--accent-dim);color:var(--accent);border-radius:100px;padding:5px 13px;font-size:.78rem;font-weight:700;}
+.why-btn:hover{background:rgba(245,185,66,.1);}
+.why-panel{display:none;margin-top:12px;padding:12px 14px;border-radius:8px;background:var(--surface);border-left:3px solid var(--accent);}
+.why-panel.open{display:block;}
+.why-panel h4{font-size:.82rem;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+
+/* case card — collapsed by default; the cube only exists once opened */
+.case-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:14px;transition:border-color .2s,box-shadow .2s;}
+.case-card.open{border-color:var(--accent-dim);box-shadow:0 10px 26px -14px rgba(245,185,66,.35);}
+.case-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;cursor:pointer;user-select:none;}
+.case-title{font-weight:700;font-size:1rem;}
+.case-sub{color:var(--dim);font-size:.82rem;}
+.case-chevron{color:var(--dim2);font-size:1rem;line-height:1;padding:2px 2px 0;transition:transform .3s cubic-bezier(.4,0,.2,1),color .2s;}
+.case-card.open .case-chevron{transform:rotate(180deg);color:var(--accent);}
+/* grid-rows 0fr→1fr trick: animates height without a JS-measured pixel value */
+.case-collapse{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s cubic-bezier(.4,0,.2,1);}
+.case-collapse > div{overflow:hidden;}
+.case-card.open .case-collapse{grid-template-rows:1fr;}
+.case-cube-panel{margin-top:10px;}
+.case-card.open .case-cube-panel{animation:caseOpen .5s cubic-bezier(.16,1,.3,1);}
+@keyframes caseOpen{0%{opacity:0;transform:translateY(8px) scale(.97);}100%{opacity:1;transform:translateY(0) scale(1);}}
+.case-body{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:10px;}
+@media(max-width:760px){.case-body{grid-template-columns:1fr;}}
+.kv{font-size:.85rem;margin:5px 0;}
+.kv b{color:var(--dim);font-weight:600;display:inline-block;min-width:96px;}
+.speed-row{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:.78rem;color:var(--dim);}
+.speed-row .speed-label{min-width:118px;}
+.speed-row input[type=range]{flex:1;max-width:180px;accent-color:var(--accent);}
+.case-movepad{margin-top:6px;}
+
+/* case grid — lightweight tiles; the heavy per-case interactive cube only
+   ever gets built once you open the case player, never for the grid itself */
+.case-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;margin-top:4px;}
+.case-grid .case-card{margin-bottom:0;padding:14px 12px 12px;content-visibility:auto;contain-intrinsic-size:0 160px;}
+.case-card{cursor:pointer;}
+.case-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lift);border-color:var(--accent-dim);}
+/* grid tiles stack vertically (thumb → name → pills) — the wide flex-row
+   .case-top from the old inline-accordion layout doesn't fit a ~150px tile */
+.case-grid .case-top{flex-direction:column;align-items:center;text-align:center;gap:6px;}
+.case-grid .case-title{font-size:.9rem;}
+.case-grid .case-sub{font-size:.74rem;}
+.case-grid .btn-row{justify-content:center;}
+.case-card .case-open-arrow{color:var(--dim2);font-size:1.1rem;transition:transform .18s,color .18s;}
+.case-card:hover .case-open-arrow{transform:translateX(2px);color:var(--accent);}
+/* thumbnail placeholder — reserves the exact size of the real mini cube so
+   nothing shifts when the IntersectionObserver swaps the real 3D thumb in */
+.mini-cube3d-wrap.pending{display:flex;align-items:center;justify-content:center;}
+.mini-cube3d-wrap.pending::after{content:'';width:22px;height:22px;border-radius:6px;background:var(--surface3);}
+
+/* case player — single-case focused view. Prev/Next/Back are pinned to a
+   sticky top bar so switching cases never requires scrolling to find them. */
+.case-player-top{
+  position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;
+  justify-content:space-between;flex-wrap:wrap;padding:10px 0 16px;
+  background:linear-gradient(180deg,var(--bg) 82%,rgba(13,14,18,0));margin-bottom:6px;
+}
+.case-player-title{flex:1;min-width:160px;}
+.case-player-title h2{font-size:1.4rem;margin:0;}
+.case-player-crumb{font-size:.72rem;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:2px;}
+.case-player-nav{display:flex;gap:8px;align-items:center;}
+.case-player-count{font-size:.76rem;color:var(--dim2);font-family:var(--mono);padding:0 4px;text-transform:none;letter-spacing:normal;font-weight:600;}
+.case-player-wrap{animation:fadein .28s ease;}
+.case-player-progress-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+
+/* opportunities (Dashboard) */
+.opportunities-card .dim{margin-bottom:4px;}
+.opportunity-list{display:flex;flex-direction:column;gap:10px;margin-top:12px;}
+.opportunity-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;}
+.opportunity-name{font-weight:700;font-size:.92rem;}
+.opportunity-sub{color:var(--dim);font-size:.78rem;margin-top:2px;}
+.opportunity-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+
+/* recognition / trainer */
+.quiz-card{max-width:560px;}
+.quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.quiz-options button{padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:.88rem;}
+.quiz-options button.correct{background:rgba(62,207,142,.18);border-color:var(--good);}
+.quiz-options button.wrong{background:rgba(224,113,74,.18);border-color:var(--warn);}
+.recog-filterbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.recog-chip{background:var(--surface2);border:1px solid var(--border);color:var(--dim);border-radius:100px;padding:5px 12px;font-size:.78rem;font-weight:600;}
+.recog-chip.active{background:var(--accent-grad);color:#231a05;border-color:transparent;}
+.hint-box{background:var(--surface2);border:1px dashed var(--border);border-radius:9px;padding:10px 12px;margin-top:10px;font-size:.85rem;color:var(--text);}
+.hint-box b{color:var(--accent);}
+.timer-chip{font-family:var(--mono);font-size:.78rem;color:var(--dim);}
+.flash-overlay{position:absolute;inset:0;background:var(--surface);border-radius:12px;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;z-index:5;color:var(--dim);font-size:.85rem;}
+.flash-count{font-family:var(--mono);color:var(--accent);font-size:1.3rem;font-weight:700;margin-top:6px;}
+
+/* timer */
+.timer-display{font-family:var(--mono);font-size:3.4rem;font-weight:700;text-align:center;padding:26px 0 10px;background:var(--accent-grad);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 40px rgba(245,185,66,.25);}
+.timer-stats{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;color:var(--dim);font-size:.85rem;margin-bottom:14px;}
+.times-list{display:flex;gap:8px;flex-wrap:wrap;}
+.time-chip{font-family:var(--mono);font-size:.8rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--dim);}
+
+/* dashboard */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+@media(max-width:800px){.stat-grid{grid-template-columns:repeat(2,1fr);}}
+.stat-card{background:linear-gradient(160deg,rgba(245,185,66,.06),rgba(255,255,255,0) 65%),var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:var(--shadow-soft);}
+.stat-num{font-family:var(--serif);font-size:2rem;font-weight:700;background:var(--accent-grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.stat-label{font-size:.78rem;color:var(--dim);margin-top:2px;}
+
+/* filter bar */
+.filterbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center;}
+.filterbar input[type=text]{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 12px;font-size:.85rem;min-width:200px;}
+.chip{padding:6px 12px;border-radius:100px;font-size:.78rem;background:var(--surface2);border:1px solid var(--border);color:var(--dim);}
+.chip.active{background:var(--accent);color:#231a05;border-color:var(--accent);font-weight:700;}
+
+.mistake{border-left:3px solid var(--warn);padding:8px 12px;margin:8px 0;background:rgba(224,113,74,.06);border-radius:0 6px 6px 0;font-size:.86rem;}
+.step-list{padding-left:0;list-style:none;counter-reset:step;}
+.step-list li{counter-increment:step;padding-left:30px;position:relative;margin-bottom:10px;font-size:.9rem;}
+.step-list li::before{content:counter(step);position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;background:var(--surface3);color:var(--accent);font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
+
+hr.rule{border:none;border-top:1px solid var(--border);margin:20px 0;}
+
+/* =========================================================================
+   MOBILE — drawer sidebar with backdrop, a persistent top bar, larger touch
+   targets throughout, and a thumb-reachable bottom bar for case Prev/Next.
+   ========================================================================= */
+@media(max-width:900px){
+  #mobileTopbar{
+    display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:45;
+    height:54px;padding:0 14px;background:var(--surface);border-bottom:1px solid var(--border);
+  }
+  #mobileTopbar .mobile-brand{font-family:var(--serif);font-weight:700;font-size:1.05rem;color:var(--text);}
+  #mobileTopbar .mobile-brand em{font-style:normal;background:var(--accent-grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  #sidebar{
+    position:fixed;left:0;top:0;bottom:0;width:min(82vw,300px);flex:0 0 auto;
+    transform:translateX(-100%);transition:transform .26s cubic-bezier(.4,0,.2,1);
+    z-index:50;box-shadow:0 0 50px rgba(0,0,0,.6);height:100%;
+  }
+  #sidebar.open{transform:translateX(0);}
+  #sidebarBackdrop{
+    display:block;position:fixed;inset:0;background:rgba(6,7,10,.6);backdrop-filter:blur(1px);
+    z-index:48;opacity:0;pointer-events:none;transition:opacity .22s ease;
+  }
+  #sidebarBackdrop.show{opacity:1;pointer-events:auto;}
+  #menuBtn{
+    display:flex;width:38px;height:38px;border-radius:9px;background:var(--surface2);
+    border:1px solid var(--border);align-items:center;justify-content:center;font-size:1.1rem;
+    color:var(--text);flex:0 0 auto;
+  }
+  #main{padding:16px 16px calc(90px + env(safe-area-inset-bottom));max-width:none;}
+  .cube-wrap{flex-direction:column;align-items:center;}
+  .cube-controls{width:100%;min-width:0;}
+
+  /* bigger, thumb-friendly touch targets everywhere */
+  .btn{padding:11px 15px;font-size:.92rem;min-height:42px;}
+  .btn.small{padding:9px 13px;font-size:.85rem;min-height:38px;}
+  .movepad{grid-template-columns:repeat(4,1fr);gap:8px;}
+  .movepad button{padding:13px 0;font-size:.95rem;min-height:44px;}
+  .navitem{padding:11px 12px;font-size:.92rem;}
+  .filterbar input[type=text]{width:100%;min-width:0;font-size:16px;}
+  .quiz-options button{padding:13px;min-height:46px;}
+  .recog-chip,.chip{padding:7px 13px;font-size:.82rem;}
+  .timer-display{font-size:2.3rem;padding:18px 0 8px;}
+  .case-grid{grid-template-columns:repeat(auto-fill,minmax(126px,1fr));gap:10px;}
+  .stat-num{font-size:1.6rem;}
+  .section > h1{font-size:1.5rem;}
+
+  /* case player: sticky top sits below the mobile bar, and Prev/Next drop
+     into a fixed bottom bar within thumb reach instead of forcing a stretch
+     to the top of the screen */
+  .case-player-top{top:54px;padding:10px 0 10px;}
+  .case-player-nav{
+    position:fixed;left:0;right:0;bottom:0;z-index:46;display:flex;gap:10px;
+    background:var(--surface2);border-top:1px solid var(--border);
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+  }
+  .case-player-nav button{flex:1;}
+  #sec-case.section{padding-bottom:74px;}
+}
+@media(max-width:480px){
+  .case-grid{grid-template-columns:repeat(auto-fill,minmax(112px,1fr));}
+  .cube3d-scene{transform:scale(.92);margin:-10px auto;}
+  .alg-picker button{padding:9px 12px;min-height:38px;}
+}
+@media(max-width:360px){
+  #main{padding:12px 10px calc(90px + env(safe-area-inset-bottom));}
+  .cube3d-scene{transform:scale(.78);margin:-28px auto;}
+  .mini-cube3d-wrap{width:72px;height:72px;}
+}
+
+/* ---------- Scan Your Cube ---------- */
+.scan-modes{display:flex;gap:8px;margin-bottom:16px;}
+.scan-modes .chip{cursor:pointer;}
+.scan-dropzone{
+  border:2px dashed var(--border);border-radius:14px;padding:26px 16px;text-align:center;
+  cursor:pointer;transition:border-color .18s,background .18s;background:var(--surface);
+}
+.scan-dropzone:hover,.scan-dropzone.drag{border-color:var(--accent-dim);background:rgba(245,185,66,.06);}
+.scan-dropzone input{display:none;}
+.scan-stage{position:relative;display:inline-block;max-width:100%;margin:16px auto;touch-action:none;}
+.scan-stage canvas{display:block;max-width:100%;border-radius:10px;border:1px solid var(--border);touch-action:none;}
+.scan-dot{
+  position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;
+  border:2px solid #fff;box-shadow:0 0 0 2px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.5);
+  cursor:grab;touch-action:none;z-index:5;display:flex;align-items:center;justify-content:center;
+  font-size:.68rem;font-weight:700;color:#111;
+}
+.scan-dot.center{background:#fff;}
+.scan-dot:active{cursor:grabbing;transform:scale(1.12);}
+.scan-result-card{display:flex;gap:14px;align-items:center;padding:14px;border:1px solid var(--border);
+  border-radius:12px;background:var(--surface);margin-bottom:10px;cursor:pointer;transition:border-color .18s;}
+.scan-result-card:hover{border-color:var(--accent-dim);}
+.scan-result-rank{font-size:1.3rem;font-weight:800;color:var(--dim2);min-width:28px;text-align:center;}
+.scan-result-card:first-child .scan-result-rank{color:var(--accent);}
+.scan-confidence-bar{height:6px;border-radius:3px;background:var(--border);overflow:hidden;margin-top:6px;width:140px;}
+.scan-confidence-fill{height:100%;background:var(--accent-grad);}
+
+/* ---------- Common Triggers ---------- */
+.trigger-used-wrap{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);}
+.trigger-used-row{margin-top:10px;}
+.trigger-chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.trigger-case-chip{cursor:pointer;transition:border-color .15s,background .15s;}
+.trigger-case-chip:hover{border-color:var(--accent-dim);color:var(--text);}
+@keyframes triggerFlash{
+  0%{box-shadow:0 0 0 2px var(--accent);}
+  100%{box-shadow:0 0 0 2px transparent;}
+}
+.card.flash{animation:triggerFlash 1.5s ease-out;}
+</style>
+</head>
+<body>
+<div id="mobileTopbar">
+  <button id="menuBtn" aria-label="Open menu" aria-expanded="false">☰</button>
+  <span class="mobile-brand">Abhi<em>&rsquo;S</em> Cube</span>
+  <button class="sound-toggle-btn mobile-sound-toggle" type="button">🔊</button>
+</div>
+<div id="sidebarBackdrop"></div>
+<div id="app">
+  <nav id="sidebar"></nav>
+  <main id="main"></main>
+</div>
+
+<script>
+/* =========================================================================
+   CUBE ENGINE — 6-face sticker model, verified move definitions.
+   Faces: U,D,F,B,L,R each a 9-element array (row-major, 0..8), viewed
+   straight-on from outside the cube. Solved state = each face one color.
+   ========================================================================= */
+function solvedState(){
+  return {U:Array(9).fill('U'),D:Array(9).fill('D'),F:Array(9).fill('F'),
+          B:Array(9).fill('B'),L:Array(9).fill('L'),R:Array(9).fill('R')};
+}
+function cloneState(s){return {U:s.U.slice(),D:s.D.slice(),F:s.F.slice(),B:s.B.slice(),L:s.L.slice(),R:s.R.slice()};}
+function rotCW(f){return [f[6],f[3],f[0],f[7],f[4],f[1],f[8],f[5],f[2]];}
+function rotCCW(f){return [f[2],f[5],f[8],f[1],f[4],f[7],f[0],f[3],f[6]];}
+function setI(arr,idx,vals){idx.forEach((i,k)=>arr[i]=vals[k]);}
+
+function turnU_(s){
+  const n=cloneState(s); n.U=rotCW(s.U);
+  setI(n.R,[0,1,2],[s.B[0],s.B[1],s.B[2]]);
+  setI(n.F,[0,1,2],[s.R[0],s.R[1],s.R[2]]);
+  setI(n.L,[0,1,2],[s.F[0],s.F[1],s.F[2]]);
+  setI(n.B,[0,1,2],[s.L[0],s.L[1],s.L[2]]);
+  return n;
+}
+function turnD_(s){
+  const n=cloneState(s); n.D=rotCW(s.D);
+  setI(n.R,[6,7,8],[s.F[6],s.F[7],s.F[8]]);
+  setI(n.B,[6,7,8],[s.R[6],s.R[7],s.R[8]]);
+  setI(n.L,[6,7,8],[s.B[6],s.B[7],s.B[8]]);
+  setI(n.F,[6,7,8],[s.L[6],s.L[7],s.L[8]]);
+  return n;
+}
+function turnR_(s){
+  const n=cloneState(s); n.R=rotCW(s.R);
+  setI(n.U,[2,5,8],[s.F[2],s.F[5],s.F[8]]);
+  setI(n.F,[2,5,8],[s.D[2],s.D[5],s.D[8]]);
+  setI(n.D,[2,5,8],[s.B[6],s.B[3],s.B[0]]);
+  setI(n.B,[0,3,6],[s.U[8],s.U[5],s.U[2]]);
+  return n;
+}
+function turnL_(s){
+  const n=cloneState(s); n.L=rotCW(s.L);
+  setI(n.F,[0,3,6],[s.U[0],s.U[3],s.U[6]]);
+  setI(n.D,[0,3,6],[s.F[0],s.F[3],s.F[6]]);
+  setI(n.B,[2,5,8],[s.D[6],s.D[3],s.D[0]]);
+  setI(n.U,[0,3,6],[s.B[8],s.B[5],s.B[2]]);
+  return n;
+}
+function turnF_(s){
+  const n=cloneState(s); n.F=rotCW(s.F);
+  setI(n.R,[0,3,6],[s.U[6],s.U[7],s.U[8]]);
+  setI(n.D,[0,1,2],[s.R[6],s.R[3],s.R[0]]);
+  setI(n.L,[2,5,8],[s.D[0],s.D[1],s.D[2]]);
+  setI(n.U,[6,7,8],[s.L[8],s.L[5],s.L[2]]);
+  return n;
+}
+function turnB_(s){
+  const n=cloneState(s); n.B=rotCW(s.B);
+  setI(n.L,[0,3,6],[s.U[2],s.U[1],s.U[0]]);
+  setI(n.D,[6,7,8],[s.L[0],s.L[3],s.L[6]]);
+  setI(n.R,[2,5,8],[s.D[8],s.D[7],s.D[6]]);
+  setI(n.U,[0,1,2],[s.R[2],s.R[5],s.R[8]]);
+  return n;
+}
+const BASE_TURNS={U:turnU_,D:turnD_,F:turnF_,B:turnB_,L:turnL_,R:turnR_};
+
+/* ---------- slice turns (M/E/S) — derived by direct analogy to the base
+   face-turn functions above, using the "middle" index set of each face
+   instead of the outer column/row that a face turn touches. By convention
+   M follows L's direction, E follows D's, S follows F's. ---------- */
+function turnM_(s){ // between L/R, follows L
+  const n=cloneState(s);
+  setI(n.F,[1,4,7],[s.U[1],s.U[4],s.U[7]]);
+  setI(n.D,[1,4,7],[s.F[1],s.F[4],s.F[7]]);
+  setI(n.B,[1,4,7],[s.D[7],s.D[4],s.D[1]]);
+  setI(n.U,[1,4,7],[s.B[7],s.B[4],s.B[1]]);
+  return n;
+}
+function turnE_(s){ // between U/D, follows D
+  const n=cloneState(s);
+  setI(n.R,[3,4,5],[s.F[3],s.F[4],s.F[5]]);
+  setI(n.B,[3,4,5],[s.R[3],s.R[4],s.R[5]]);
+  setI(n.L,[3,4,5],[s.B[3],s.B[4],s.B[5]]);
+  setI(n.F,[3,4,5],[s.L[3],s.L[4],s.L[5]]);
+  return n;
+}
+function turnS_(s){ // between F/B, follows F
+  const n=cloneState(s);
+  setI(n.R,[1,4,7],[s.U[3],s.U[4],s.U[5]]);
+  setI(n.D,[3,4,5],[s.R[7],s.R[4],s.R[1]]);
+  setI(n.L,[1,4,7],[s.D[3],s.D[4],s.D[5]]);
+  setI(n.U,[3,4,5],[s.L[7],s.L[4],s.L[1]]);
+  return n;
+}
+// Applies a base function 3 times — the "prime"/inverse of a single CW step,
+// used to build composite wide/rotation moves out of the verified base and
+// slice turns without hand-deriving a fresh permutation for each.
+function inv(fn){ return s=>fn(fn(fn(s))); }
+// Wide (double-layer) turns: outer face + the slice turned to match it.
+// M/E/S each default to matching L/D/F respectively, so the moves that
+// match R/U/B instead use the slice's inverse.
+const WIDE_TURNS={
+  r: s=>inv(turnM_)(turnR_(s)),
+  l: s=>turnM_(turnL_(s)),
+  u: s=>inv(turnE_)(turnU_(s)),
+  d: s=>turnE_(turnD_(s)),
+  f: s=>turnS_(turnF_(s)),
+  b: s=>inv(turnS_)(turnB_(s)),
+};
+// Whole-cube rotations: x matches R, y matches U, z matches F — each is the
+// matching outer face, then its slice, then the opposite face inverted.
+const ROTATION_TURNS={
+  x: s=>inv(turnL_)(inv(turnM_)(turnR_(s))),
+  y: s=>inv(turnD_)(inv(turnE_)(turnU_(s))),
+  z: s=>inv(turnB_)(turnS_(turnF_(s))),
+};
+const ALL_TURNS=Object.assign({},BASE_TURNS,{M:turnM_,E:turnE_,S:turnS_},WIDE_TURNS,ROTATION_TURNS);
+
+function applyMove(state,move){
+  const face=move[0];
+  const mod=move.slice(1); // '', "'", "2"
+  const fn=ALL_TURNS[face];
+  if(!fn) return state;
+  let s=state;
+  const times = mod==="2"?2:(mod==="'"?3:1);
+  for(let i=0;i<times;i++) s=fn(s);
+  return s;
+}
+function applyAlgorithm(state,algStr){
+  return parseAlg(algStr).reduce((s,m)=>applyMove(s,m),state);
+}
+function parseAlg(algStr){
+  return algStr.trim().split(/\s+/).filter(Boolean);
+}
+function isSolved(s){
+  return ['U','D','F','B','L','R'].every(f=>s[f].every(c=>c===s[f][0]));
+}
+function diffStickers(a,b){
+  const out=[];
+  ['U','D','F','B','L','R'].forEach(f=>{
+    for(let i=0;i<9;i++) if(a[f][i]!==b[f][i]) out.push(f+i);
+  });
+  return out;
+}
+function scrambleMoves(n){
+  const faces=['U','D','F','B','L','R'];
+  const mods=['','\'','2'];
+  const opp={U:'D',D:'U',F:'B',B:'F',L:'R',R:'L'};
+  const out=[];
+  let last=null,lastAxis=null;
+  for(let i=0;i<n;i++){
+    let f;
+    do{f=faces[Math.floor(Math.random()*6)];}
+    while(f===last || (lastAxis && opp[f]===last));
+    last=f; lastAxis=f;
+    out.push(f+mods[Math.floor(Math.random()*3)]);
+  }
+  return out;
+}
+
+/* =========================================================================
+   MOVE SOUND — synthesized cube-turn click, no audio files needed.
+   Lazily creates a single shared AudioContext on the first move (browsers
+   block audio before a user gesture anyway), and shapes a short noise-burst
+   "click" with a quick pitch/gain envelope. Prime moves get a touch lower
+   pitch and double (2) moves get two quick clicks, so a turn's direction
+   and length are audible, not just visible.
+   ========================================================================= */
+let soundEnabled = true;
+let audioCtx = null;
+function getAudioCtx(){
+  if(!audioCtx){
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) return null;
+    audioCtx = new AC();
+  }
+  if(audioCtx.state==='suspended') audioCtx.resume();
+  return audioCtx;
+}
+function clickOnce(ctx, delay, basePitch){
+  const t0 = ctx.currentTime + delay;
+  // Short filtered noise burst reads as a plasticky "click" much more than
+  // a pure tone would — closer to an actual cube turn than a beep.
+  const bufferSize = Math.floor(ctx.sampleRate * 0.05);
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for(let i=0;i<bufferSize;i++){ data[i] = (Math.random()*2-1) * (1 - i/bufferSize); }
+  const noise = ctx.createBufferSource();
+  noise.buffer = buffer;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = basePitch;
+  filter.Q.value = 1.1;
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.35, t0);
+  gain.gain.exponentialRampToValueAtTime(0.001, t0+0.06);
+  noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+  noise.start(t0); noise.stop(t0+0.07);
+}
+function playMoveSound(move){
+  if(!soundEnabled) return;
+  const ctx = getAudioCtx();
+  if(!ctx) return;
+  const prime = move.endsWith("'");
+  const double = move.endsWith('2');
+  const basePitch = prime ? 1500 : 1900;
+  clickOnce(ctx, 0, basePitch);
+  if(double) clickOnce(ctx, 0.07, basePitch);
+}
+function setSoundEnabled(v){
+  soundEnabled = v;
+  document.querySelectorAll('.sound-toggle-btn').forEach(b=>{
+    b.textContent = soundEnabled ? '🔊' : '🔇';
+    b.setAttribute('aria-label', soundEnabled ? 'Mute move sounds' : 'Unmute move sounds');
+    b.title = soundEnabled ? 'Move sounds on — click to mute' : 'Move sounds off — click to unmute';
+  });
+}
+
+/* =========================================================================
+   APP STATE
+   ========================================================================= */
+let cube = solvedState();
+let cubeHistory = [];
+let lastHighlight = [];
+let playToken = 0;
+
+const progress = {
+  learned:new Set(), needsPractice:new Set(), difficult:new Set(),
+  recog:{attempts:0, correct:0, times:[], byCase:{}},
+  sessions:1, timesSolved:[],
+  levelsSeen:new Set()
+};
+
+function doMove(move, opts={}){
+  const prev = cube;
+  cube = applyMove(cube, move);
+  lastHighlight = diffStickers(prev, cube);
+  cubeHistory.push(move);
+  if(!opts.silent) playMoveSound(move);
+  if(opts.silent) return Promise.resolve();
+  // Only the mount(s) on the currently visible page actually get animated
+  // and repainted — every hidden page (Home, Notation, every Beginner
+  // Level, Timer, Recognition…) that was ever opened stays registered for
+  // when you come back to it, but skipping DOM work on the ones you can't
+  // see is what keeps things smooth as a session goes on.
+  const jobs = [];
+  cubeMounts.forEach(m=>{
+    if(!isMountVisible(m)) return;
+    if(m.dataset.type==='cube3d') jobs.push(animateMove3D(m, move).then(()=>renderCubeInto(m)));
+    else renderCubeInto(m);
+  });
+  updateCubeStatus();
+  // Returning this lets callers (playAlgorithm) wait for the physical turn
+  // to actually finish before starting the next one — without it, a fast
+  // playback speed could fire the next move's animation before the last
+  // one settled, which is what caused the cube to visibly glitch/stutter.
+  return Promise.all(jobs);
+}
+// Applies a whole sequence to the shared cube state with zero DOM work in
+// between — used for scrambles, undo-replay and "set up this case", which
+// used to repaint every registered mount after every single intermediate
+// move (up to 20x over for a scramble) for no visible benefit.
+function applyMovesSilently(moves){
+  moves.forEach(m=>{ cube = applyMove(cube, m); cubeHistory.push(m); });
+  lastHighlight = [];
+}
+function resetCube(){ cube=solvedState(); cubeHistory=[]; lastHighlight=[]; renderCube(); updateCubeStatus(); }
+function scrambleCube(){
+  resetCube();
+  const seq = scrambleMoves(20);
+  applyMovesSilently(seq);
+  renderCube();
+  updateCubeStatus();
+  return seq;
+}
+async function playAlgorithm(algStr, {onStep, speed=550}={}){
+  const token = ++playToken;
+  const moves = parseAlg(algStr);
+  for(let i=0;i<moves.length;i++){
+    if(token!==playToken) return;
+    const movePromise = doMove(moves[i]);
+    if(onStep) onStep(i, moves.length, moves[i]);
+    // Wait for the physical turn AND the pacing delay together, so the
+    // next move never starts mid-animation regardless of chosen speed.
+    await Promise.all([movePromise, sleep(speed)]);
+  }
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+/* ---------- speak-the-moves (text-to-speech) ----------
+   Optional narration during "Show & Solve" playback. Each player instance
+   gets its own on/off checkbox (see buildSpeakToggle); the flag it controls
+   just lives on a small object passed in, so multiple players on screen
+   don't fight over one global. Speech is fire-and-forget and cancels any
+   utterance still talking so it never falls behind fast playback speeds. */
+const SPEECH_LETTER_NAMES = {U:'U',D:'D',F:'F',B:'B',L:'L',R:'R',M:'M',E:'E',S:'S',
+  r:'R',l:'L',u:'U',d:'D',f:'F',b:'B',x:'X',y:'Y',z:'Z'};
+function moveToSpeech(move){
+  const face = move[0];
+  const mod = move.slice(1);
+  let word = SPEECH_LETTER_NAMES[face] || face;
+  if('rludfb'.includes(face)) word = 'wide ' + word;
+  if(mod==="'") word += ' prime';
+  else if(mod==='2') word += ' two';
+  return word;
+}
+const speechSupported = (typeof window!=='undefined') && 'speechSynthesis' in window;
+function speakMove(move){
+  if(!speechSupported) return;
+  try{
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(moveToSpeech(move));
+    u.rate = 1.15;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+// Returns {row, state} — state.on reflects the checkbox live; row is ready to append.
+function buildSpeakToggle(){
+  const state = {on:false};
+  const row = el('label','dim speak-toggle');
+  row.style.display='inline-flex'; row.style.alignItems='center'; row.style.gap='6px'; row.style.marginLeft='10px'; row.style.fontSize='.8rem';
+  if(!speechSupported){
+    row.textContent = '🔇 Speech not supported in this browser';
+    return {row, state};
+  }
+  const cb = document.createElement('input');
+  cb.type='checkbox';
+  cb.onchange=()=>{ state.on = cb.checked; if(!cb.checked) window.speechSynthesis.cancel(); };
+  row.appendChild(cb);
+  row.appendChild(document.createTextNode('🔊 Speak moves'));
+  return {row, state};
+}
+
+
+function stopPlayback(){ playToken++; }
+
+/* =========================================================================
+   RENDERING — cube net
+   layout (12x9 grid): columns 0-2 L, 3-5 F, 6-8 R, 9-11 B ; U above F(row0-2 col3-5 shifted up), D below
+   We build with explicit grid-area placement per cell.
+   ========================================================================= */
+const NET_MAP = []; // {face, idx, col, row}
+(function buildNetMap(){
+  // U occupies rows0-2, cols3-5
+  for(let r=0;r<3;r++)for(let c=0;c<3;c++) NET_MAP.push({face:'U',idx:r*3+c,col:3+c,row:r});
+  // row3-5: L(0-2) F(3-5) R(6-8) B(9-11)
+  const rowFaces=[['L',0],['F',3],['R',6],['B',9]];
+  for(const [face,offset] of rowFaces){
+    for(let r=0;r<3;r++)for(let c=0;c<3;c++) NET_MAP.push({face,idx:r*3+c,col:offset+c,row:3+r});
+  }
+  // D rows6-8 cols3-5
+  for(let r=0;r<3;r++)for(let c=0;c<3;c++) NET_MAP.push({face:'D',idx:r*3+c,col:3+c,row:6+r});
+})();
+
+function buildNetDOM(container){
+  container.innerHTML='';
+  NET_MAP.forEach(cell=>{
+    const d=document.createElement('div');
+    d.className='sticker';
+    d.style.gridColumn=(cell.col+1);
+    d.style.gridRow=(cell.row+1);
+    d.dataset.face=cell.face;
+    d.dataset.idx=cell.idx;
+    container.appendChild(d);
+  });
+}
+
+/* ---------- 3D cube rendering (per-cubie, physically animated) ---------- */
+const CUBIE=46, GAP=4, STEP=CUBIE+GAP, HALF=CUBIE/2;
+const CUBIE_COORDS=[];
+for(let x=-1;x<=1;x++) for(let y=-1;y<=1;y++) for(let z=-1;z<=1;z++){
+  if(x===0&&y===0&&z===0) continue; // true center cubie is never visible
+  CUBIE_COORDS.push({x,y,z});
+}
+// Maps each outward face direction of a cubie at (x,y,z) to the sticker
+// array cell (face letter + 0..8 index) it represents. Derived directly
+// from the U/D/F/B/L/R turn definitions above so a physical layer turn and
+// the underlying state transform always agree on what moved where.
+const DIR_DEFS={
+  U:{cls:'cf-top',    outward:c=>c.y===1,  idx:c=>(c.z+1)*3+(c.x+1)},
+  D:{cls:'cf-bottom', outward:c=>c.y===-1, idx:c=>(1-c.z)*3+(c.x+1)},
+  F:{cls:'cf-front',  outward:c=>c.z===1,  idx:c=>(1-c.y)*3+(c.x+1)},
+  B:{cls:'cf-back',   outward:c=>c.z===-1, idx:c=>(1-c.y)*3+(1-c.x)},
+  R:{cls:'cf-right',  outward:c=>c.x===1,  idx:c=>(1-c.y)*3+(1-c.z)},
+  L:{cls:'cf-left',   outward:c=>c.x===-1, idx:c=>(1-c.y)*3+(c.z+1)},
+};
+const FACE_ORDER=['U','D','F','B','L','R'];
+// Rotation axis + base angle (single clockwise turn) for each face, matching
+// the exact cycle each turnX_ function above produces.
+const MOVE_DEF={
+  U:{axis:'Y', test:c=>c.y===1,  angle:-90},
+  D:{axis:'Y', test:c=>c.y===-1, angle:90},
+  F:{axis:'Z', test:c=>c.z===1,  angle:-90},
+  B:{axis:'Z', test:c=>c.z===-1, angle:90},
+  R:{axis:'X', test:c=>c.x===1,  angle:-90},
+  L:{axis:'X', test:c=>c.x===-1, angle:90},
+};
+// Slice turns spin only the middle layer of cubies on that axis, in the
+// same direction as the face each one is defined to match (M~L, E~D, S~F).
+MOVE_DEF.M={axis:'X', test:c=>c.x===0, angle:MOVE_DEF.L.angle};
+MOVE_DEF.E={axis:'Y', test:c=>c.y===0, angle:MOVE_DEF.D.angle};
+MOVE_DEF.S={axis:'Z', test:c=>c.z===0, angle:MOVE_DEF.F.angle};
+// Wide turns spin the outer layer plus the middle layer together, same
+// angle as the outer face they're built from.
+MOVE_DEF.r={axis:'X', test:c=>c.x===1||c.x===0,  angle:MOVE_DEF.R.angle};
+MOVE_DEF.l={axis:'X', test:c=>c.x===-1||c.x===0, angle:MOVE_DEF.L.angle};
+MOVE_DEF.u={axis:'Y', test:c=>c.y===1||c.y===0,  angle:MOVE_DEF.U.angle};
+MOVE_DEF.d={axis:'Y', test:c=>c.y===-1||c.y===0, angle:MOVE_DEF.D.angle};
+MOVE_DEF.f={axis:'Z', test:c=>c.z===1||c.z===0,  angle:MOVE_DEF.F.angle};
+MOVE_DEF.b={axis:'Z', test:c=>c.z===-1||c.z===0, angle:MOVE_DEF.B.angle};
+// Whole-cube rotations spin every cubie together — x matches R, y matches
+// U, z matches F.
+MOVE_DEF.x={axis:'X', test:()=>true, angle:MOVE_DEF.R.angle};
+MOVE_DEF.y={axis:'Y', test:()=>true, angle:MOVE_DEF.U.angle};
+MOVE_DEF.z={axis:'Z', test:()=>true, angle:MOVE_DEF.F.angle};
+
+function buildCube3DDOM(container){
+  container.innerHTML='';
+  container.classList.add('cube3d-scene');
+  const cube3d = document.createElement('div');
+  cube3d.className='cube3d';
+  const layer = document.createElement('div');
+  layer.className='cubie-layer';
+  CUBIE_COORDS.forEach(c=>{
+    const anchor = document.createElement('div');
+    anchor.className='cubie-anchor';
+    anchor.dataset.x=c.x; anchor.dataset.y=c.y; anchor.dataset.z=c.z;
+    anchor.style.transform = `translate3d(${c.x*STEP}px, ${-c.y*STEP}px, ${c.z*STEP}px)`;
+    const cubie = document.createElement('div');
+    cubie.className='cubie';
+    FACE_ORDER.forEach(dir=>{
+      const face = document.createElement('div');
+      face.className='cubie-face '+DIR_DEFS[dir].cls;
+      if(DIR_DEFS[dir].outward(c)){
+        const sticker = document.createElement('div');
+        sticker.className='cubie-sticker';
+        sticker.dataset.face=dir;
+        sticker.dataset.idx=DIR_DEFS[dir].idx(c);
+        face.appendChild(sticker);
+      }
+      cubie.appendChild(face);
+    });
+    anchor.appendChild(cubie);
+    layer.appendChild(anchor);
+  });
+  cube3d.appendChild(layer);
+  container.appendChild(cube3d);
+  attachDragRotate(container, cube3d);
+  container._cubieLayer = layer;
+}
+// One shared drag-tracker for every cube scene on the page (rather than a
+// fresh pair of window-level mousemove/mouseup listeners per cube — which
+// used to pile up as more cases got opened over a session and was a real
+// source of the app getting sluggish the longer you used it).
+let _activeDrag = null;
+(function initSharedDrag(){
+  const move = (x,y)=>{ if(_activeDrag) _activeDrag.move(x,y); };
+  const end = ()=>{ if(_activeDrag){ _activeDrag.end(); _activeDrag=null; } };
+  window.addEventListener('mousemove', e=>move(e.clientX,e.clientY));
+  window.addEventListener('mouseup', end);
+})();
+function attachDragRotate(scene, cubeEl){
+  let lastX=0, lastY=0, rx=-24, ry=-34;
+  const apply=()=>{ cubeEl.style.transform='rotateX('+rx+'deg) rotateY('+ry+'deg)'; };
+  apply();
+  scene._resetRotation=()=>{ rx=-24; ry=-34; apply(); };
+  function start(x,y){ lastX=x; lastY=y; cubeEl.classList.add('spinning'); _activeDrag={move:onMove,end:onEnd}; }
+  function onMove(x,y){
+    const dx=x-lastX, dy=y-lastY;
+    lastX=x; lastY=y;
+    ry += dx*0.5;
+    rx = Math.max(-85, Math.min(85, rx - dy*0.5));
+    apply();
+  }
+  function onEnd(){ cubeEl.classList.remove('spinning'); }
+  scene.addEventListener('mousedown', e=>{ start(e.clientX,e.clientY); e.preventDefault(); });
+  scene.addEventListener('touchstart', e=>{ const t=e.touches[0]; start(t.clientX,t.clientY); }, {passive:true});
+  scene.addEventListener('touchmove', e=>{ if(_activeDrag&&_activeDrag.move===onMove){ const t=e.touches[0]; onMove(t.clientX,t.clientY); } }, {passive:true});
+  scene.addEventListener('touchend', ()=>{ if(_activeDrag&&_activeDrag.end===onEnd){ onEnd(); _activeDrag=null; } });
+}
+
+// Physically rotates the 9 cubies of one layer around the cube's own
+// center, then hands them back to their static slots and lets
+// renderCubeInto paint the post-move colors — the visual end point of the
+// turn and the new state always coincide, so the snap is invisible.
+function animateMove3D(container, move, duration=260){
+  return new Promise(resolve=>{
+    const layer = container._cubieLayer;
+    if(!layer){ resolve(); return; }
+    const def = MOVE_DEF[move[0]];
+    if(!def){ resolve(); return; }
+    const mod = move.slice(1);
+    const angle = def.angle * (mod==="2"?2:(mod==="'"?-1:1));
+    const anchors=[...layer.querySelectorAll('.cubie-anchor')].filter(a=>
+      def.test({x:+a.dataset.x,y:+a.dataset.y,z:+a.dataset.z}));
+    const pivot = document.createElement('div');
+    pivot.className='turn-pivot';
+    layer.appendChild(pivot);
+    anchors.forEach(a=>pivot.appendChild(a));
+    pivot.getBoundingClientRect(); // force reflow so the transition catches the start state
+    pivot.style.transition = `transform ${duration}ms cubic-bezier(.4,0,.2,1)`;
+    requestAnimationFrame(()=>{ pivot.style.transform = `rotate${def.axis}(${angle}deg)`; });
+    setTimeout(()=>{
+      anchors.forEach(a=>layer.appendChild(a));
+      pivot.remove();
+      resolve();
+    }, duration+30);
+  });
+}
+
+function renderCubeInto(container){
+  if(!container) return;
+  if(!container.dataset.built){
+    if(container.dataset.type==='cube3d') buildCube3DDOM(container);
+    else buildNetDOM(container);
+    container.dataset.built='1';
+  }
+  if(container.dataset.type==='cube3d'){
+    const cells = container.querySelectorAll('.cubie-sticker');
+    for(const el of cells){
+      const f=el.dataset.face, i=+el.dataset.idx;
+      const color = cube[f][i];
+      el.className = 'cubie-sticker col-'+color;
+      if(lastHighlight.includes(f+i)) el.classList.add('hl');
+    }
+  } else {
+    const cells = container.querySelectorAll('[data-face]');
+    for(const el of cells){
+      const f=el.dataset.face, i=+el.dataset.idx;
+      const color = cube[f][i];
+      el.className = 'sticker col-'+color;
+      if(lastHighlight.includes(f+i)) el.classList.add('hl');
+    }
+  }
+}
+let cubeMounts = [];
+// offsetParent is null for display:none — this also skips animating the
+// 3D cube while the Net view toggle has it hidden (and vice versa), which
+// used to burn a full turn animation on an invisible element every move.
+function isMountVisible(mEl){ const sec = mEl.closest('.section'); return !!sec && sec.classList.contains('active') && mEl.offsetParent !== null; }
+function registerCubeMount(el, type){ if(type) el.dataset.type=type; cubeMounts.push(el); renderCubeInto(el); }
+function renderCube(){ cubeMounts.forEach(m=>{ if(isMountVisible(m)) renderCubeInto(m); }); }
+
+
+/* ---------- static case thumbnails (independent of the shared cube panel) ---------- */
+function computeCaseState(c){
+  let s = solvedState();
+  parseAlg(inverseAlg(c.algorithm)).forEach(m=>{ s = applyMove(s, m); });
+  return s;
+}
+function buildMiniNet(state){
+  const wrap = el('div','mini-net-wrap');
+  const net = el('div','mini-net');
+  NET_MAP.forEach(cell=>{
+    const d = document.createElement('div');
+    d.className = 'sticker col-'+state[cell.face][cell.idx];
+    d.style.gridColumn = (cell.col+1);
+    d.style.gridRow = (cell.row+1);
+    net.appendChild(d);
+  });
+  wrap.appendChild(net);
+  return wrap;
+}
+function buildMiniCube3D(state){
+  const wrap = el('div','mini-cube3d-wrap');
+  wrap.appendChild(buildMiniCube3DScene(state));
+  return wrap;
+}
+function buildMiniCube3DScene(state){
+  // Same per-cubie DOM shape as the big interactive cube (buildCube3DDOM),
+  // just painted once from a fixed `state` object instead of the shared
+  // global `cube`, with no drag handlers — a static but genuinely 3D,
+  // perspective-correct thumbnail.
+  const scene = el('div','cube3d-scene');
+  const cube3d = el('div','cube3d');
+  cube3d.style.transform = 'rotateX(-24deg) rotateY(-34deg)';
+  const layer = el('div','cubie-layer');
+  CUBIE_COORDS.forEach(c=>{
+    const anchor = document.createElement('div');
+    anchor.className = 'cubie-anchor';
+    anchor.style.transform = `translate3d(${c.x*STEP}px, ${-c.y*STEP}px, ${c.z*STEP}px)`;
+    const cubie = document.createElement('div');
+    cubie.className = 'cubie';
+    FACE_ORDER.forEach(dir=>{
+      const face = document.createElement('div');
+      face.className = 'cubie-face '+DIR_DEFS[dir].cls;
+      if(DIR_DEFS[dir].outward(c)){
+        const sticker = document.createElement('div');
+        sticker.className = 'cubie-sticker col-'+state[dir][DIR_DEFS[dir].idx(c)];
+        face.appendChild(sticker);
+      }
+      cubie.appendChild(face);
+    });
+    anchor.appendChild(cubie);
+    layer.appendChild(anchor);
+  });
+  cube3d.appendChild(layer);
+  scene.appendChild(cube3d);
+  return scene;
+}
+// Thumbnails used to be a full 3D cube (~150 DOM nodes, CSS 3D transforms,
+// gradients) built lazily via IntersectionObserver — but even staggered,
+// that was still too much per-thumbnail work on real devices and the
+// observer added its own edge cases (this is what was behind cases "all
+// arriving at once" and the jank/scroll problems on mobile). A flat sticker
+// net (~54 tiny plain divs, no 3D compositing at all) is cheap enough to
+// build for all 57 OLL cases synchronously with no lazy-loading needed.
+function buildCaseThumb(c){
+  return buildMiniNet(computeCaseState(c));
+}
+function updateCubeStatus(){
+  document.querySelectorAll('.cube-status.global-status').forEach(el=>{
+    if(isSolved(cube)){ el.textContent='Solved ✓'; el.classList.add('solved'); }
+    else { el.textContent = cubeHistory.length? (cubeHistory.length+' moves from start') : 'Ready'; el.classList.remove('solved'); }
+  });
+}
+</script>
+
+<script>
+/* =========================================================================
+   UTIL
+   ========================================================================= */
+function inverseAlg(algStr){
+  return parseAlg(algStr).reverse().map(m=>{
+    if(m.endsWith("'")) return m[0];
+    if(m.endsWith('2')) return m;
+    return m+"'";
+  }).join(' ');
+}
+function el(tag, cls, html){ const e=document.createElement(tag); if(cls) e.className=cls; if(html!==undefined) e.innerHTML=html; return e; }
+// Small debounce so typing in a search box (which can rebuild 50-100+ case
+// cards per keystroke) waits for a short pause instead of doing full work
+// on every single character — the single biggest cause of typing feeling
+// laggy in the F2L/OLL/PLL and Algorithm Trainer search boxes.
+function debounce(fn, ms=140){
+  let t=null;
+  return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); };
+}
+function uid(){ return 'id'+Math.random().toString(36).slice(2,9); }
+
+/* =========================================================================
+   CONTENT DATA
+   ========================================================================= */
+const NOTATION = [
+  {mv:'U', name:'Up', desc:'Turn the top layer 90° clockwise, as viewed looking straight down at the top face.'},
+  {mv:"U'", name:'Up Prime', desc:'Turn the top layer 90° counter-clockwise (the reverse of U).'},
+  {mv:'U2', name:'Up Double', desc:'Turn the top layer 180° — direction does not matter, it lands the same either way.'},
+  {mv:'D', name:'Down', desc:'Turn the bottom layer 90° clockwise, as viewed looking up from underneath the cube.'},
+  {mv:"D'", name:'Down Prime', desc:'Turn the bottom layer 90° counter-clockwise.'},
+  {mv:'D2', name:'Down Double', desc:'Turn the bottom layer 180°.'},
+  {mv:'F', name:'Front', desc:'Turn the face nearest you 90° clockwise, as viewed straight-on.'},
+  {mv:"F'", name:'Front Prime', desc:'Turn the front face 90° counter-clockwise.'},
+  {mv:'F2', name:'Front Double', desc:'Turn the front face 180°.'},
+  {mv:'B', name:'Back', desc:'Turn the far face 90° clockwise, as viewed from behind the cube (imagine walking around to look at it).'},
+  {mv:"B'", name:'Back Prime', desc:'Turn the back face 90° counter-clockwise.'},
+  {mv:'B2', name:'Back Double', desc:'Turn the back face 180°.'},
+  {mv:'L', name:'Left', desc:'Turn the left face 90° clockwise, as viewed straight-on from the left side.'},
+  {mv:"L'", name:'Left Prime', desc:'Turn the left face 90° counter-clockwise.'},
+  {mv:'L2', name:'Left Double', desc:'Turn the left face 180°.'},
+  {mv:'R', name:'Right', desc:'Turn the right face 90° clockwise, as viewed straight-on from the right side.'},
+  {mv:"R'", name:'Right Prime', desc:'Turn the right face 90° counter-clockwise.'},
+  {mv:'R2', name:'Right Double', desc:'Turn the right face 180°.'},
+];
+
+const CROSS_SECTION = {
+  id:'cross', title:'Cross',
+  concept:'The cross is 4 edge pieces, all matched to one center, arranged in a plus-sign around it. Beginners often chase "any white edge" and end up scrambling pieces they already placed — instead, plan the whole cross before you turn anything. Cross is done intuitively (no algorithms to memorize) both in the beginner method and in CFOP — it\'s the same skill either way.',
+  points:[
+    'The center determines the face\'s permanent color — pick one center color (commonly white) to build your cross on.',
+    'Each cross edge has <i>two</i> colors. It isn\'t solved just because one side shows the cross color — the other sticker must also match the neighboring center it sits against.',
+    'Look for all 4 cross-color edges before moving anything. Building a mental map first means far fewer wasted turns.',
+    'A well-built cross also leaves the 4 corners undisturbed, so the very next step (F2L) doesn\'t immediately re-break your cross.',
+    'As you improve, aim to plan and execute the cross while inspecting the scramble, before your official solve time even starts — this is called "cross planning" and is a major speedsolving skill on its own.'
+  ],
+  mistakes:['Placing an edge that shows the right color on top but doesn\'t match the side center — it looks done from above but isn\'t.','Solving cross edges one at a time with no plan, which repeatedly disturbs edges you already placed.']
+};
+
+const F2L_CASES = [
+  {id:'f2l-01', name:'Connected Pair, Right Slot', group:'Connected Pair', num:1, recognition:'The corner and its matching edge are already stuck together in the top layer, forming a little block above the empty slot. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"U R U' R'", why:'The setup moves slide the connected block into position above the gap, then the final trigger drops both pieces in and locks them together in one motion.', playable:true},
+  {id:'f2l-02', name:'Connected Pair, Front Angle', group:'Connected Pair', num:2, recognition:'The corner and its matching edge are already stuck together in the top layer, forming a little block above the empty slot.', algorithm:"F R' F' R", why:'The setup moves slide the connected block into position above the gap, then the final trigger drops both pieces in and locks them together in one motion.', playable:true},
+  {id:'f2l-03', name:'Connected Pair, Deep Right', group:'Connected Pair', num:3, recognition:'The corner and its matching edge are already stuck together in the top layer, forming a little block above the empty slot. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"U' R U R' U2 R U' R'", why:'The setup moves slide the connected block into position above the gap, then the final trigger drops both pieces in and locks them together in one motion.', playable:true},
+  {id:'f2l-04', name:'Connected Pair, Deep Left', group:'Connected Pair', num:4, recognition:'The corner and its matching edge are already stuck together in the top layer, forming a little block above the empty slot. Mirrored to the left compared to its sibling case in this family.', algorithm:"U L' U' L U2 L' U L", why:'The setup moves slide the connected block into position above the gap, then the final trigger drops both pieces in and locks them together in one motion.', playable:true},
+  {id:'f2l-05', name:'Connected Pair, Twisted Right', group:'Connected Pair', num:5, recognition:'The corner and its matching edge are already stuck together in the top layer, forming a little block above the empty slot. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"U' R U2 R' U2 R U' R'", why:'The setup moves slide the connected block into position above the gap, then the final trigger drops both pieces in and locks them together in one motion.', playable:true},
+  {id:'f2l-06', name:'Connected Pair, Front Deep', group:'Connected Pair', num:6, recognition:'The corner and its matching edge are already stuck together in the top layer, forming a little block above the empty slot. A deeper variant of the base connected shape.', algorithm:"R' F R F'", why:'The setup moves slide the connected block into position above the gap, then the final trigger drops both pieces in and locks them together in one motion.', playable:true},
+  {id:'f2l-07', name:'Connected Pair, Offset Left', group:'Connected Pair', num:7, recognition:'The corner and its matching edge are already stuck together in the top layer, forming a little block above the empty slot. Mirrored to the left compared to its sibling case in this family.', algorithm:"y' R' U R U' d' R U R'", why:'The setup moves slide the connected block into position above the gap, then the final trigger drops both pieces in and locks them together in one motion.', playable:true},
+  {id:'f2l-08', name:'Connected Pair, Offset Right', group:'Connected Pair', num:8, recognition:'The corner and its matching edge are already stuck together in the top layer, forming a little block above the empty slot. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"R U' R' U2 F' U' F", why:'The setup moves slide the connected block into position above the gap, then the final trigger drops both pieces in and locks them together in one motion.', playable:true},
+  {id:'f2l-09', name:'Split Pair, Left Drop', group:'Split Pair', num:9, recognition:'The corner sits in the top layer above the slot, and its matching edge sits elsewhere in the top layer, unconnected — pairing happens as part of the insert. Mirrored to the left compared to its sibling case in this family.', algorithm:"y' R' U' R", why:'A short trigger drops the corner in while catching the edge on the way past, pairing and inserting in a single small motion.', playable:true},
+  {id:'f2l-10', name:'Split Pair, Right Drop', group:'Split Pair', num:10, recognition:'The corner sits in the top layer above the slot, and its matching edge sits elsewhere in the top layer, unconnected — pairing happens as part of the insert. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"R U R'", why:'A short trigger drops the corner in while catching the edge on the way past, pairing and inserting in a single small motion.', playable:true},
+  {id:'f2l-11', name:'Split Pair, Deep Left', group:'Split Pair', num:11, recognition:'The corner sits in the top layer above the slot, and its matching edge sits elsewhere in the top layer, unconnected — pairing happens as part of the insert. Mirrored to the left compared to its sibling case in this family.', algorithm:"d R' U' R U' R' U' R", why:'A short trigger drops the corner in while catching the edge on the way past, pairing and inserting in a single small motion.', playable:true},
+  {id:'f2l-12', name:'Split Pair, Deep Right', group:'Split Pair', num:12, recognition:'The corner sits in the top layer above the slot, and its matching edge sits elsewhere in the top layer, unconnected — pairing happens as part of the insert. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"U' R U R' U R U R'", why:'A short trigger drops the corner in while catching the edge on the way past, pairing and inserting in a single small motion.', playable:true},
+  {id:'f2l-13', name:'Split Pair, Wide Left', group:'Split Pair', num:13, recognition:'The corner sits in the top layer above the slot, and its matching edge sits elsewhere in the top layer, unconnected — pairing happens as part of the insert. Mirrored to the left compared to its sibling case in this family.', algorithm:"U' R U2 R' d R' U' R", why:'A short trigger drops the corner in while catching the edge on the way past, pairing and inserting in a single small motion.', playable:true},
+  {id:'f2l-14', name:'Split Pair, Wide Right', group:'Split Pair', num:14, recognition:'The corner sits in the top layer above the slot, and its matching edge sits elsewhere in the top layer, unconnected — pairing happens as part of the insert. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"R U' R' U R U' R' U2 R U' R'", why:'A short trigger drops the corner in while catching the edge on the way past, pairing and inserting in a single small motion.', playable:true},
+  {id:'f2l-15', name:'Split Pair, Tucked Left', group:'Split Pair', num:15, recognition:'The corner sits in the top layer above the slot, and its matching edge sits elsewhere in the top layer, unconnected — pairing happens as part of the insert. Mirrored to the left compared to its sibling case in this family.', algorithm:"d R' U R U' R' U' R", why:'A short trigger drops the corner in while catching the edge on the way past, pairing and inserting in a single small motion.', playable:true},
+  {id:'f2l-16', name:'Split Pair, Tucked Right', group:'Split Pair', num:16, recognition:'The corner sits in the top layer above the slot, and its matching edge sits elsewhere in the top layer, unconnected — pairing happens as part of the insert. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"U' R U' R' U R U R'", why:'A short trigger drops the corner in while catching the edge on the way past, pairing and inserting in a single small motion.', playable:true},
+  {id:'f2l-17', name:'Corner Above Edge, Right', group:'Corner Above Placed Edge', num:17, recognition:'The edge for this slot is already correctly placed in the middle layer, but the matching corner still sits in the top layer. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"R U2 R' U' R U R'", why:'The algorithm temporarily pulls the placed edge back out with a setup move, re-pairs it with the corner above, then reinserts both together.', playable:true},
+  {id:'f2l-18', name:'Corner Above Edge, Left', group:'Corner Above Placed Edge', num:18, recognition:'The edge for this slot is already correctly placed in the middle layer, but the matching corner still sits in the top layer. Mirrored to the left compared to its sibling case in this family.', algorithm:"y L' U2 L U L' U' L", why:'The algorithm temporarily pulls the placed edge back out with a setup move, re-pairs it with the corner above, then reinserts both together.', playable:true},
+  {id:'f2l-19', name:'Corner Above Edge, Deep Right', group:'Corner Above Placed Edge', num:19, recognition:'The edge for this slot is already correctly placed in the middle layer, but the matching corner still sits in the top layer. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"U R U2 R' U R U' R'", why:'The algorithm temporarily pulls the placed edge back out with a setup move, re-pairs it with the corner above, then reinserts both together.', playable:true},
+  {id:'f2l-20', name:'Corner Above Edge, Deep Left', group:'Corner Above Placed Edge', num:20, recognition:'The edge for this slot is already correctly placed in the middle layer, but the matching corner still sits in the top layer. Mirrored to the left compared to its sibling case in this family.', algorithm:"y' U' R' U2 R U' R' U R", why:'The algorithm temporarily pulls the placed edge back out with a setup move, re-pairs it with the corner above, then reinserts both together.', playable:true},
+  {id:'f2l-21', name:'Corner Above Edge, Twisted Right', group:'Corner Above Placed Edge', num:21, recognition:'The edge for this slot is already correctly placed in the middle layer, but the matching corner still sits in the top layer. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"U2 R U R' U R U' R'", why:'The algorithm temporarily pulls the placed edge back out with a setup move, re-pairs it with the corner above, then reinserts both together.', playable:true},
+  {id:'f2l-22', name:'Corner Above Edge, Twisted Left', group:'Corner Above Placed Edge', num:22, recognition:'The edge for this slot is already correctly placed in the middle layer, but the matching corner still sits in the top layer. Mirrored to the left compared to its sibling case in this family.', algorithm:"y' R' U R U2 R' U' R", why:'The algorithm temporarily pulls the placed edge back out with a setup move, re-pairs it with the corner above, then reinserts both together.', playable:true},
+  {id:'f2l-23', name:'Corner Above Edge, Wrapped Right', group:'Corner Above Placed Edge', num:23, recognition:'The edge for this slot is already correctly placed in the middle layer, but the matching corner still sits in the top layer. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"U2 R2 U2 R' U' R U' R2", why:'The algorithm temporarily pulls the placed edge back out with a setup move, re-pairs it with the corner above, then reinserts both together.', playable:true},
+  {id:'f2l-24', name:'Corner Above Edge, Wrapped Left', group:'Corner Above Placed Edge', num:24, recognition:'The edge for this slot is already correctly placed in the middle layer, but the matching corner still sits in the top layer. Mirrored to the left compared to its sibling case in this family.', algorithm:"y' U2 R2 U2 R U R' U R2", why:'The algorithm temporarily pulls the placed edge back out with a setup move, re-pairs it with the corner above, then reinserts both together.', playable:true},
+  {id:'f2l-25', name:'Corner Placed, Edge Above Left', group:'Corner Placed, Edge Above', num:25, recognition:'The corner for this slot is already correctly placed in the bottom layer, but the matching edge still sits in the top layer. Mirrored to the left compared to its sibling case in this family.', algorithm:"U R U' R' d' L' U L", why:'The algorithm temporarily frees the placed corner, catches the edge above it, and drops both back into the slot as a connected pair.', playable:true},
+  {id:'f2l-26', name:'Corner Placed, Edge Above Right', group:'Corner Placed, Edge Above', num:26, recognition:'The corner for this slot is already correctly placed in the bottom layer, but the matching edge still sits in the top layer. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"y U' L' U L y' U R U' R'", why:'The algorithm temporarily frees the placed corner, catches the edge above it, and drops both back into the slot as a connected pair.', playable:true},
+  {id:'f2l-27', name:'Corner Placed, Edge Above, Deep Left', group:'Corner Placed, Edge Above', num:27, recognition:'The corner for this slot is already correctly placed in the bottom layer, but the matching edge still sits in the top layer. Mirrored to the left compared to its sibling case in this family.', algorithm:"y' R' U' R U R' U' R", why:'The algorithm temporarily frees the placed corner, catches the edge above it, and drops both back into the slot as a connected pair.', playable:true},
+  {id:'f2l-28', name:'Corner Placed, Edge Above, Deep Right', group:'Corner Placed, Edge Above', num:28, recognition:'The corner for this slot is already correctly placed in the bottom layer, but the matching edge still sits in the top layer. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"R U R' U' R U R'", why:'The algorithm temporarily frees the placed corner, catches the edge above it, and drops both back into the slot as a connected pair.', playable:true},
+  {id:'f2l-29', name:'Corner Placed, Edge Above, Reverse Right', group:'Corner Placed, Edge Above', num:29, recognition:'The corner for this slot is already correctly placed in the bottom layer, but the matching edge still sits in the top layer. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"R U' R' U R U' R'", why:'The algorithm temporarily frees the placed corner, catches the edge above it, and drops both back into the slot as a connected pair.', playable:true},
+  {id:'f2l-30', name:'Corner Placed, Edge Above, Reverse Left', group:'Corner Placed, Edge Above', num:30, recognition:'The corner for this slot is already correctly placed in the bottom layer, but the matching edge still sits in the top layer. Mirrored to the left compared to its sibling case in this family.', algorithm:"y' R' U R U' R' U R", why:'The algorithm temporarily frees the placed corner, catches the edge above it, and drops both back into the slot as a connected pair.', playable:true},
+  {id:'f2l-31', name:'Edge in Slot, Corner Above Right', group:'Edge in Slot, Corner Above', num:31, recognition:'The edge is already sitting in the slot but flipped or misaligned, and the corner is still in the top layer. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"U' R U' R' U2 R U' R'", why:'A short sequence backs the misplaced edge out just enough to fix its orientation while grabbing the corner from above, then reinserts both.', playable:true},
+  {id:'f2l-32', name:'Edge in Slot, Corner Above, Deep', group:'Edge in Slot, Corner Above', num:32, recognition:'The edge is already sitting in the slot but flipped or misaligned, and the corner is still in the top layer. A deeper variant of the base connected shape.', algorithm:"U' R U2 R' U R U R'", why:'A short sequence backs the misplaced edge out just enough to fix its orientation while grabbing the corner from above, then reinserts both.', playable:true},
+  {id:'f2l-33', name:'Edge in Slot, Corner Above, Wrapped', group:'Edge in Slot, Corner Above', num:33, recognition:'The edge is already sitting in the slot but flipped or misaligned, and the corner is still in the top layer. A wrapped variant where the pieces sit slightly differently before the insert.', algorithm:"U' R U R' d R' U' R", why:'A short sequence backs the misplaced edge out just enough to fix its orientation while grabbing the corner from above, then reinserts both.', playable:true},
+  {id:'f2l-34', name:'Edge in Slot, Corner Above, Wrapped Mirror', group:'Edge in Slot, Corner Above', num:34, recognition:'The edge is already sitting in the slot but flipped or misaligned, and the corner is still in the top layer. A wrapped variant where the pieces sit slightly differently before the insert.', algorithm:"d R' U' R d' R U R'", why:'A short sequence backs the misplaced edge out just enough to fix its orientation while grabbing the corner from above, then reinserts both.', playable:true},
+  {id:'f2l-35', name:'Edge in Slot, Corner Above, Tucked', group:'Edge in Slot, Corner Above', num:35, recognition:'The edge is already sitting in the slot but flipped or misaligned, and the corner is still in the top layer.', algorithm:"R U' R' d R' U R", why:'A short sequence backs the misplaced edge out just enough to fix its orientation while grabbing the corner from above, then reinserts both.', playable:true},
+  {id:'f2l-36', name:'Edge in Slot, Corner Above, Double Trigger', group:'Edge in Slot, Corner Above', num:36, recognition:'The edge is already sitting in the slot but flipped or misaligned, and the corner is still in the top layer.', algorithm:"R U R' U' R U R' U' R U R'", why:'A short sequence backs the misplaced edge out just enough to fix its orientation while grabbing the corner from above, then reinserts both.', playable:true},
+  {id:'f2l-37', name:'Both Misplaced, Long Right', group:'Both Pieces Misplaced', num:37, recognition:'Both the corner and the edge for this slot are wedged into the slot itself, but incorrectly — neither piece is usable as-is. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"R U' R' U' R U R' U2 R U' R'", why:'The longest F2L family: both pieces have to be extracted from the slot, re-paired in the top layer, and reinserted — hence the longer algorithms.', playable:true},
+  {id:'f2l-38', name:'Both Misplaced, Long Left', group:'Both Pieces Misplaced', num:38, recognition:'Both the corner and the edge for this slot are wedged into the slot itself, but incorrectly — neither piece is usable as-is. Mirrored to the left compared to its sibling case in this family.', algorithm:"R U R' U2 R U' R' U R U R'", why:'The longest F2L family: both pieces have to be extracted from the slot, re-paired in the top layer, and reinserted — hence the longer algorithms.', playable:true},
+  {id:'f2l-39', name:'Both Misplaced, Wrapped Right', group:'Both Pieces Misplaced', num:39, recognition:'Both the corner and the edge for this slot are wedged into the slot itself, but incorrectly — neither piece is usable as-is. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"R U' R' d R' U' R U' R' U' R", why:'The longest F2L family: both pieces have to be extracted from the slot, re-paired in the top layer, and reinserted — hence the longer algorithms.', playable:true},
+  {id:'f2l-40', name:'Both Misplaced, Wrapped Left', group:'Both Pieces Misplaced', num:40, recognition:'Both the corner and the edge for this slot are wedged into the slot itself, but incorrectly — neither piece is usable as-is. Mirrored to the left compared to its sibling case in this family.', algorithm:"R U R' U' R U' R' U2 y' R' U' R", why:'The longest F2L family: both pieces have to be extracted from the slot, re-paired in the top layer, and reinserted — hence the longer algorithms.', playable:true},
+  {id:'f2l-41', name:'Both Misplaced, Full Wrap', group:'Both Pieces Misplaced', num:41, recognition:'Both the corner and the edge for this slot are wedged into the slot itself, but incorrectly — neither piece is usable as-is.', algorithm:"R' F R F' R U' R' U R U' R' U2 R U' R'", why:'The longest F2L family: both pieces have to be extracted from the slot, re-paired in the top layer, and reinserted — hence the longer algorithms.', playable:true}
+];
+
+
+const OLL_CASES = [
+  {id:'oll-27', name:'Sune', group:'Sune Family', num:27, recognition:'One corner already shows the top color; the other 3 form a diagonal headlights pattern.', algorithm:"R U R' U R U2 R'", why:'A corner-cycling commutator (a sexy-move-style trigger repeated with a doubled turn) that concentrates a twist onto exactly the corners that need it.', playable:true},
+  {id:'oll-26', name:'Anti-Sune', group:'Sune Family', num:26, recognition:'One corner already shows the top color; the other 3 form a diagonal headlights pattern.', algorithm:"R' U' R U' R' U2 R", why:'A corner-cycling commutator (a sexy-move-style trigger repeated with a doubled turn) that concentrates a twist onto exactly the corners that need it.', playable:true},
+  {id:'oll-21', name:'OLL 21', group:'OCLL — All Edges Oriented', num:21, recognition:'A full top-color cross already shows (all 4 edges oriented) — only the corners still need fixing.', algorithm:"R U2 R' U' R U R' U' R U' R'", why:'All 4 edges are already oriented, so this algorithm only has to cycle and twist corners — a sequence that leaves every edge untouched throughout.', playable:true},
+  {id:'oll-22', name:'OLL 22', group:'OCLL — All Edges Oriented', num:22, recognition:'A full top-color cross already shows (all 4 edges oriented) — only the corners still need fixing.', algorithm:"R U2 R2 U' R2 U' R2 U2 R", why:'All 4 edges are already oriented, so this algorithm only has to cycle and twist corners — a sequence that leaves every edge untouched throughout.', playable:true},
+  {id:'oll-23', name:'Superman', group:'OCLL — All Edges Oriented', num:23, recognition:'A full top-color cross already shows (all 4 edges oriented) — only the corners still need fixing.', algorithm:"R2 D R' U2 R D' R' U2 R'", why:'All 4 edges are already oriented, so this algorithm only has to cycle and twist corners — a sequence that leaves every edge untouched throughout.', playable:true},
+  {id:'oll-24', name:'OLL 24', group:'OCLL — All Edges Oriented', num:24, recognition:'A full top-color cross already shows (all 4 edges oriented) — only the corners still need fixing.', algorithm:"l' U' L U R U' r' F", why:'All 4 edges are already oriented, so this algorithm only has to cycle and twist corners — a sequence that leaves every edge untouched throughout.', playable:true},
+  {id:'oll-25', name:'OLL 25', group:'OCLL — All Edges Oriented', num:25, recognition:'A full top-color cross already shows (all 4 edges oriented) — only the corners still need fixing.', algorithm:"R' F R B' R' F' R B", why:'All 4 edges are already oriented, so this algorithm only has to cycle and twist corners — a sequence that leaves every edge untouched throughout.', playable:true},
+  {id:'oll-01', name:'OLL 1', group:'No Edges Oriented', num:1, recognition:'None of the 4 edges show the top color yet — the busiest-looking family of OLL shapes.', algorithm:"R U2 R2 F R F' U2 R' F R F'", why:'None of the edges are oriented yet, so the algorithm has to flip edges and twist corners together — usually an F-trigger or sledgehammer wrapped around a sexy-move-style core.', playable:true},
+  {id:'oll-02', name:'OLL 2', group:'No Edges Oriented', num:2, recognition:'None of the 4 edges show the top color yet — the busiest-looking family of OLL shapes.', algorithm:"F R U R' U' F' f R U R' U' f'", why:'None of the edges are oriented yet, so the algorithm has to flip edges and twist corners together — usually an F-trigger or sledgehammer wrapped around a sexy-move-style core.', playable:true},
+  {id:'oll-03', name:'OLL 3', group:'No Edges Oriented', num:3, recognition:'None of the 4 edges show the top color yet — the busiest-looking family of OLL shapes.', algorithm:"f R U R' U' f' U' F R U R' U' F'", why:'None of the edges are oriented yet, so the algorithm has to flip edges and twist corners together — usually an F-trigger or sledgehammer wrapped around a sexy-move-style core.', playable:true},
+  {id:'oll-04', name:'OLL 4', group:'No Edges Oriented', num:4, recognition:'None of the 4 edges show the top color yet — the busiest-looking family of OLL shapes.', algorithm:"f R U R' U' f' U F R U R' U' F'", why:'None of the edges are oriented yet, so the algorithm has to flip edges and twist corners together — usually an F-trigger or sledgehammer wrapped around a sexy-move-style core.', playable:true},
+  {id:'oll-17', name:'OLL 17', group:'No Edges Oriented', num:17, recognition:'None of the 4 edges show the top color yet — the busiest-looking family of OLL shapes.', algorithm:"R U R' U R' F R F' U2 R' F R F'", why:'None of the edges are oriented yet, so the algorithm has to flip edges and twist corners together — usually an F-trigger or sledgehammer wrapped around a sexy-move-style core.', playable:true},
+  {id:'oll-18', name:'OLL 18', group:'No Edges Oriented', num:18, recognition:'None of the 4 edges show the top color yet — the busiest-looking family of OLL shapes.', algorithm:"R U2 R2 F R F' U2 M' U R U' r'", why:'None of the edges are oriented yet, so the algorithm has to flip edges and twist corners together — usually an F-trigger or sledgehammer wrapped around a sexy-move-style core.', playable:true},
+  {id:'oll-19', name:'OLL 19', group:'No Edges Oriented', num:19, recognition:'None of the 4 edges show the top color yet — the busiest-looking family of OLL shapes.', algorithm:"r' R U R U R' U' r R2 F R F'", why:'None of the edges are oriented yet, so the algorithm has to flip edges and twist corners together — usually an F-trigger or sledgehammer wrapped around a sexy-move-style core.', playable:true},
+  {id:'oll-20', name:'OLL 20', group:'No Edges Oriented', num:20, recognition:'None of the 4 edges show the top color yet — the busiest-looking family of OLL shapes.', algorithm:"M U R U R' U' M2 U R U' r'", why:'None of the edges are oriented yet, so the algorithm has to flip edges and twist corners together — usually an F-trigger or sledgehammer wrapped around a sexy-move-style core.', playable:true},
+  {id:'oll-37', name:'Fish', group:'Fish & Kite Shapes', num:37, recognition:'A fish or kite-shaped wedge of top color, with one edge oriented and the corners forming a diagonal point.', algorithm:"F R U' R' U' R U R' F'", why:'Combines two familiar triggers back to back — a sexy move (or its reverse) and a sledgehammer-style F-trigger — to finish orienting the last few pieces.', playable:true},
+  {id:'oll-35', name:'Fish, Reversed', group:'Fish & Kite Shapes', num:35, recognition:'A fish or kite-shaped wedge of top color, with one edge oriented and the corners forming a diagonal point. The reversed/rotated sibling of the base shape in this family.', algorithm:"R U2 R2 F R F' R U2 R'", why:'Combines two familiar triggers back to back — a sexy move (or its reverse) and a sledgehammer-style F-trigger — to finish orienting the last few pieces.', playable:true},
+  {id:'oll-10', name:'Kite', group:'Fish & Kite Shapes', num:10, recognition:'A fish or kite-shaped wedge of top color, with one edge oriented and the corners forming a diagonal point.', algorithm:"R U R' U R' F R F' R U2 R'", why:'Combines two familiar triggers back to back — a sexy move (or its reverse) and a sledgehammer-style F-trigger — to finish orienting the last few pieces.', playable:true},
+  {id:'oll-09', name:'Kite, Reversed', group:'Fish & Kite Shapes', num:9, recognition:'A fish or kite-shaped wedge of top color, with one edge oriented and the corners forming a diagonal point. The reversed/rotated sibling of the base shape in this family.', algorithm:"R U R' U' R' F R2 U R' U' F'", why:'Combines two familiar triggers back to back — a sexy move (or its reverse) and a sledgehammer-style F-trigger — to finish orienting the last few pieces.', playable:true},
+  {id:'oll-13', name:'Knight-Move, Long Left', group:'Knight-Move Shapes', num:13, recognition:'One oriented piece and an offset piece diagonally spaced like a knight\'s move in chess. Mirrored to the left compared to its sibling case in this family.', algorithm:"F U R U2 R' U' R U R' F'", why:'A longer commutator that reaches across the layer to fix a corner and edge offset like a knight\'s move in chess, without disturbing anything else.', playable:true},
+  {id:'oll-14', name:'Knight-Move, Long Right', group:'Knight-Move Shapes', num:14, recognition:'One oriented piece and an offset piece diagonally spaced like a knight\'s move in chess. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"R' F R U R' F' R F U' F'", why:'A longer commutator that reaches across the layer to fix a corner and edge offset like a knight\'s move in chess, without disturbing anything else.', playable:true},
+  {id:'oll-16', name:'Knight-Move, Short Left', group:'Knight-Move Shapes', num:16, recognition:'One oriented piece and an offset piece diagonally spaced like a knight\'s move in chess. Mirrored to the left compared to its sibling case in this family.', algorithm:"r U r' R U R' U' r U' r'", why:'A longer commutator that reaches across the layer to fix a corner and edge offset like a knight\'s move in chess, without disturbing anything else.', playable:true},
+  {id:'oll-15', name:'Knight-Move, Short Right', group:'Knight-Move Shapes', num:15, recognition:'One oriented piece and an offset piece diagonally spaced like a knight\'s move in chess. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"l' U' l L' U' L U l' U l", why:'A longer commutator that reaches across the layer to fix a corner and edge offset like a knight\'s move in chess, without disturbing anything else.', playable:true},
+  {id:'oll-40', name:'Big Bolt, Right', group:'Lightning Bolts — Big', num:40, recognition:'A long diagonal zig-zag streak of top color running corner to corner. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"R' F R U R' U' F' U R", why:'An F-trigger wraps a short R/U sequence, closing with a turn that restores the top layer alignment once the last piece is set.', playable:true},
+  {id:'oll-39', name:'Big Bolt, Left', group:'Lightning Bolts — Big', num:39, recognition:'A long diagonal zig-zag streak of top color running corner to corner. Mirrored to the left compared to its sibling case in this family.', algorithm:"L F' L' U' L U F U' L'", why:'An F-trigger wraps a short R/U sequence, closing with a turn that restores the top layer alignment once the last piece is set.', playable:true},
+  {id:'oll-08', name:'Small Bolt, Right', group:'Lightning Bolts — Small', num:8, recognition:'A short diagonal zig-zag streak of top color, more compact than the big bolt shapes. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"R U2 R' U2 R' F R F'", why:'The same tuck / disturb / restore shape used across several OLL cases — F opens, a trigger fixes the pieces, and a closing move restores the front.', playable:true},
+  {id:'oll-07', name:'Small Bolt, Left', group:'Lightning Bolts — Small', num:7, recognition:'A short diagonal zig-zag streak of top color, more compact than the big bolt shapes. Mirrored to the left compared to its sibling case in this family.', algorithm:"r U R' U R U2 r'", why:'The same tuck / disturb / restore shape used across several OLL cases — F opens, a trigger fixes the pieces, and a closing move restores the front.', playable:true},
+  {id:'oll-12', name:'Small Bolt, Offset Right', group:'Lightning Bolts — Small', num:12, recognition:'A short diagonal zig-zag streak of top color, more compact than the big bolt shapes. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"F R U R' U' F' U F R U R' U' F'", why:'The same tuck / disturb / restore shape used across several OLL cases — F opens, a trigger fixes the pieces, and a closing move restores the front.', playable:true},
+  {id:'oll-11', name:'Small Bolt, Offset Left', group:'Lightning Bolts — Small', num:11, recognition:'A short diagonal zig-zag streak of top color, more compact than the big bolt shapes. Mirrored to the left compared to its sibling case in this family.', algorithm:"r' R2 U R' U R U2 R' U M'", why:'The same tuck / disturb / restore shape used across several OLL cases — F opens, a trigger fixes the pieces, and a closing move restores the front.', playable:true},
+  {id:'oll-06', name:'Square, Right', group:'Square Shapes', num:6, recognition:'Two oriented pieces sit adjacent, forming a small 2x1 block or square of top color. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"r U2 R' U' R U' r'", why:'A tight, symmetric sequence that pivots two oriented pieces into place using a short repeated pattern.', playable:true},
+  {id:'oll-05', name:'Square, Left', group:'Square Shapes', num:5, recognition:'Two oriented pieces sit adjacent, forming a small 2x1 block or square of top color. Mirrored to the left compared to its sibling case in this family.', algorithm:"l' U2 L U L' U l", why:'A tight, symmetric sequence that pivots two oriented pieces into place using a short repeated pattern.', playable:true},
+  {id:'oll-28', name:'Arrow', group:'Arrow & H Shapes', num:28, recognition:'A cross or bar of top color already showing, with the corners forming an arrow or H pattern.', algorithm:"M' U M U2 M' U M", why:'A rhythmic, almost metronomic sequence that cycles all 4 corners since the edges never need to move.', playable:true},
+  {id:'oll-57', name:'H', group:'Arrow & H Shapes', num:57, recognition:'A cross or bar of top color already showing, with the corners forming an arrow or H pattern.', algorithm:"R U R' U' M' U R U' r'", why:'A rhythmic, almost metronomic sequence that cycles all 4 corners since the edges never need to move.', playable:true},
+  {id:'oll-46', name:'C Shape, Right', group:'C Shapes', num:46, recognition:'A C-shaped curve of top color wrapping around one misoriented corner pair. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"R' U' R' F R F' U R", why:'Pulls one corner briefly out of formation, wraps it with an F- or B-trigger, then restores the grip — a compact fix for a single misoriented corner pair.', playable:true},
+  {id:'oll-34', name:'C Shape, Left', group:'C Shapes', num:34, recognition:'A C-shaped curve of top color wrapping around one misoriented corner pair. Mirrored to the left compared to its sibling case in this family.', algorithm:"R U R2 U' R' F R U R U' F'", why:'Pulls one corner briefly out of formation, wraps it with an F- or B-trigger, then restores the grip — a compact fix for a single misoriented corner pair.', playable:true},
+  {id:'oll-55', name:'I Shape, Bars', group:'I Shapes', num:55, recognition:'A straight line of top color running through the center, like the letter I.', algorithm:"R U2 R2 U' R U' R' U2 F R F'", why:'A straight-line shape solved by a trigger sandwich — open, fix the middle pieces, close — sometimes finishing with an F or B turn instead of U.', playable:true},
+  {id:'oll-52', name:'I Shape, Single Bar Right', group:'I Shapes', num:52, recognition:'A straight line of top color running through the center, like the letter I. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"R U R' U R U' B U' B' R'", why:'A straight-line shape solved by a trigger sandwich — open, fix the middle pieces, close — sometimes finishing with an F or B turn instead of U.', playable:true},
+  {id:'oll-51', name:'I Shape, No Bar Left', group:'I Shapes', num:51, recognition:'A straight line of top color running through the center, like the letter I. Mirrored to the left compared to its sibling case in this family.', algorithm:"f R U R' U' R U R' U' f'", why:'A straight-line shape solved by a trigger sandwich — open, fix the middle pieces, close — sometimes finishing with an F or B turn instead of U.', playable:true},
+  {id:'oll-56', name:'I Shape, No Bar Right', group:'I Shapes', num:56, recognition:'A straight line of top color running through the center, like the letter I. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"F R U R' U' R F' r U R' U' r'", why:'A straight-line shape solved by a trigger sandwich — open, fix the middle pieces, close — sometimes finishing with an F or B turn instead of U.', playable:true},
+  {id:'oll-48', name:'L Shape, Right', group:'L Shapes', num:48, recognition:'An L-shaped patch of top color with the remaining pieces needing the same twist direction. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"F R U R' U' R U R' U' F'", why:'The classic F...F\' wrapper, with a sexy-move-style trigger (sometimes doubled) tucked inside to fix the L-shaped patch of unoriented pieces.', playable:true},
+  {id:'oll-47', name:'L Shape, Left', group:'L Shapes', num:47, recognition:'An L-shaped patch of top color with the remaining pieces needing the same twist direction. Mirrored to the left compared to its sibling case in this family.', algorithm:"R' U' R' F R F' R' F R F' U R", why:'The classic F...F\' wrapper, with a sexy-move-style trigger (sometimes doubled) tucked inside to fix the L-shaped patch of unoriented pieces.', playable:true},
+  {id:'oll-54', name:'L Shape, Bar Right', group:'L Shapes', num:54, recognition:'An L-shaped patch of top color with the remaining pieces needing the same twist direction. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"r U R' U R U' R' U R U2 r'", why:'The classic F...F\' wrapper, with a sexy-move-style trigger (sometimes doubled) tucked inside to fix the L-shaped patch of unoriented pieces.', playable:true},
+  {id:'oll-53', name:'L Shape, Bar Left', group:'L Shapes', num:53, recognition:'An L-shaped patch of top color with the remaining pieces needing the same twist direction. Mirrored to the left compared to its sibling case in this family.', algorithm:"l' U' L U' L' U L U' L' U2 l", why:'The classic F...F\' wrapper, with a sexy-move-style trigger (sometimes doubled) tucked inside to fix the L-shaped patch of unoriented pieces.', playable:true},
+  {id:'oll-49', name:'L Shape, Block Left', group:'L Shapes', num:49, recognition:'An L-shaped patch of top color with the remaining pieces needing the same twist direction. Mirrored to the left compared to its sibling case in this family.', algorithm:"r U' r2 U r2 U r2 U' r", why:'The classic F...F\' wrapper, with a sexy-move-style trigger (sometimes doubled) tucked inside to fix the L-shaped patch of unoriented pieces.', playable:true},
+  {id:'oll-50', name:'L Shape, Block Right', group:'L Shapes', num:50, recognition:'An L-shaped patch of top color with the remaining pieces needing the same twist direction. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"R' F R2 B' R2 F' R2 B R'", why:'The classic F...F\' wrapper, with a sexy-move-style trigger (sometimes doubled) tucked inside to fix the L-shaped patch of unoriented pieces.', playable:true},
+  {id:'oll-44', name:'P Shape, Bar Left', group:'P Shapes', num:44, recognition:'A P-shaped patch of top color, compact and easy to spot once you know the silhouette. Mirrored to the left compared to its sibling case in this family.', algorithm:"f R U R' U' f'", why:'The cleanest version of the tuck / disturb / restore pattern — a short wrap (often just one trigger) around the P-shaped patch of top color.', playable:true},
+  {id:'oll-43', name:'P Shape, Bar Right', group:'P Shapes', num:43, recognition:'A P-shaped patch of top color, compact and easy to spot once you know the silhouette. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"f' L' U' L U f", why:'The cleanest version of the tuck / disturb / restore pattern — a short wrap (often just one trigger) around the P-shaped patch of top color.', playable:true},
+  {id:'oll-32', name:'P Shape, No Bar Right', group:'P Shapes', num:32, recognition:'A P-shaped patch of top color, compact and easy to spot once you know the silhouette. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"R U B' U' R' U R B R'", why:'The cleanest version of the tuck / disturb / restore pattern — a short wrap (often just one trigger) around the P-shaped patch of top color.', playable:true},
+  {id:'oll-31', name:'P Shape, No Bar Left', group:'P Shapes', num:31, recognition:'A P-shaped patch of top color, compact and easy to spot once you know the silhouette. Mirrored to the left compared to its sibling case in this family.', algorithm:"R' U' F U R U' R' F' R", why:'The cleanest version of the tuck / disturb / restore pattern — a short wrap (often just one trigger) around the P-shaped patch of top color.', playable:true},
+  {id:'oll-45', name:'T Shape, Right', group:'T Shapes', num:45, recognition:'A literal T-shaped patch of top color — one of the most visually distinct OLL shapes. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"F R U R' U' F'", why:'The shortest members of the whole OLL set — a single F...F\' wrap around one trigger, finishing the last layer in as few as 6 moves.', playable:true},
+  {id:'oll-33', name:'T Shape, Left', group:'T Shapes', num:33, recognition:'A literal T-shaped patch of top color — one of the most visually distinct OLL shapes. Mirrored to the left compared to its sibling case in this family.', algorithm:"R U R' U' R' F R F'", why:'The shortest members of the whole OLL set — a single F...F\' wrap around one trigger, finishing the last layer in as few as 6 moves.', playable:true},
+  {id:'oll-38', name:'W Shape, Right', group:'W Shapes', num:38, recognition:'A zig-zag W outline traced by the oriented pieces on top. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"R U R' U R U' R' U' R' F R F'", why:'Several sexy-move-family turns cycle the corners into place, then a closing F-trigger orients the final piece — a busier zig-zag pattern than most.', playable:true},
+  {id:'oll-36', name:'W Shape, Left', group:'W Shapes', num:36, recognition:'A zig-zag W outline traced by the oriented pieces on top. Mirrored to the left compared to its sibling case in this family.', algorithm:"L' U' L U' L' U L U L F' L' F", why:'Several sexy-move-family turns cycle the corners into place, then a closing F-trigger orients the final piece — a busier zig-zag pattern than most.', playable:true},
+  {id:'oll-30', name:'Awkward, Right', group:'Awkward Shapes', num:30, recognition:'An irregular pattern that doesn\'t form a clean symmetric shape — commonly mistaken for a neighboring case. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"R2 U R' B' R U' R2 U R B R'", why:'An irregular, asymmetric pattern that needs a longer sexy-move-plus-F-trigger sequence since the oriented pieces aren\'t adjacent or symmetric.', playable:true},
+  {id:'oll-29', name:'Awkward, Left', group:'Awkward Shapes', num:29, recognition:'An irregular pattern that doesn\'t form a clean symmetric shape — commonly mistaken for a neighboring case. Mirrored to the left compared to its sibling case in this family.', algorithm:"R U R' U' R U' R' F' U' F R U R'", why:'An irregular, asymmetric pattern that needs a longer sexy-move-plus-F-trigger sequence since the oriented pieces aren\'t adjacent or symmetric.', playable:true},
+  {id:'oll-41', name:'Awkward, Offset Right', group:'Awkward Shapes', num:41, recognition:'An irregular pattern that doesn\'t form a clean symmetric shape — commonly mistaken for a neighboring case. Angled to the right — check the sibling case in this family for the mirror.', algorithm:"R U R' U R U2 R' F R U R' U' F'", why:'An irregular, asymmetric pattern that needs a longer sexy-move-plus-F-trigger sequence since the oriented pieces aren\'t adjacent or symmetric.', playable:true},
+  {id:'oll-42', name:'Awkward, Offset Left', group:'Awkward Shapes', num:42, recognition:'An irregular pattern that doesn\'t form a clean symmetric shape — commonly mistaken for a neighboring case. Mirrored to the left compared to its sibling case in this family.', algorithm:"R' U' R U' R' U2 R F R U R' U' F'", why:'An irregular, asymmetric pattern that needs a longer sexy-move-plus-F-trigger sequence since the oriented pieces aren\'t adjacent or symmetric.', playable:true}
+];
+
+
+const PLL_CASES = [
+  {id:'pll-ua', name:'Ua', group:'Edges Only', kind:'Edge 3-cycle', playable:true,
+   recognition:'Top layer corners are all correct. 3 edges need to cycle; one edge is already in place.',
+   algorithm:"R U' R U R U R U' R' U' R2",
+   algs:["R U' R U R U R U' R' U' R2", "M2 U M' U2 M U M2"],
+   why:'A pure edge commutator — no corner ever leaves its layer improperly, so corners come back exactly as they started while 3 edges rotate one step around the ring.',
+   memory:'Watch for the doubled ending, R2 — it is what finally "locks" the cycle after 4 single R-based moves set it up.'},
+  {id:'pll-ub', name:'Ub', group:'Edges Only', kind:'Edge 3-cycle (reverse)', playable:true,
+   recognition:'Mirror direction of Ua — same idea, opposite rotation.',
+   algorithm:"R2 U R U R' U' R' U' R' U R'",
+   algs:["R2 U R U R' U' R' U' R' U R'", "M2 U' M' U2 M U' M2"],
+   why:'The reverse-direction sibling of Ua, built from the same move vocabulary read in the opposite pattern.',
+   memory:'Notice it opens with R2 instead of ending with it — that swap is the single biggest tell between Ua and Ub.'},
+  {id:'pll-h', name:'H', group:'Edges Only', kind:'Opposite edge swap', playable:true,
+   recognition:'All 4 edges need to swap in opposite pairs — the top layer looks like 2 solved bars facing each other.',
+   algorithm:"M2 U M2 U2 M2 U M2",
+   algs:["M2 U M2 U2 M2 U M2", "M2 U' M2 U2 M2 U' M2"],
+   why:'Built entirely from M (middle-slice) turns, which spin the invisible center layer between L and R.',
+   memory:'"M2, U, M2, U2, M2, U, M2" — a clean, symmetric rhythm once you\'ve practiced M-slice turns on a physical cube.'},
+  {id:'pll-z', name:'Z', group:'Edges Only', kind:'Adjacent edge swap', playable:true,
+   recognition:'Two adjacent pairs of edges swap; corners are already correct.',
+   algorithm:"M' U M2 U M2 U M' U2 M2",
+   why:'Also M-slice based — like H-perm, this one is built entirely from middle-slice turns.',
+   memory:'Group it mentally with H-perm as "the two M-slice edge-only perms."'},
+  {id:'pll-aa', name:'Aa', group:'Corners Only', kind:'Adjacent corner swap', playable:true,
+   recognition:'Edges are all correct; 3 corners need to cycle counter-clockwise.',
+   algorithm:"x R' U R' D2 R U' R' D2 R2 x'",
+   why:'Uses whole-cube x rotations to reposition your grip rather than turning a new face.',
+   memory:'The D2...D2 pair in the middle is the part most people find memorable — everything else is R-based.'},
+  {id:'pll-ab', name:'Ab', group:'Corners Only', kind:'Adjacent corner swap (reverse)', playable:true,
+   recognition:'Mirror direction of Aa.',
+   algorithm:"x R2 D2 R U R' D2 R U' R x'",
+   why:'The reverse-cycle sibling of Aa, same family of moves.',
+   memory:'Learn Aa first; Ab is "almost the same shape, opposite direction."'},
+  {id:'pll-e', name:'E', group:'Corners Only', kind:'Diagonal corner swap', playable:true,
+   recognition:'Both pairs of corners are swapped diagonally; edges untouched.',
+   algorithm:"x' R U' R' D R U R' D' R U R' D R U' R' D' x",
+   why:'A long, elegant repeating pattern (R U\' R\' D, repeated with variations) that cycles corners through all four D-layer positions.',
+   memory:'It is one 4-move fragment (R _ R\' D) repeated four times with small tweaks — spot the repetition rather than treating it as 17 unrelated moves.'},
+  {id:'pll-f', name:'F', group:'Corner + Edge', kind:'Adjacent swap', playable:true,
+   recognition:'One corner pair and one edge pair, both adjacent, need swapping — everything else already lines up.',
+   algorithm:"R' U2 R U2 R' F R U R' U' R' F' R2 U'",
+   why:'A longer commutator combining R-trigger and F-trigger fragments to move a corner and an adjacent edge together in one motion.',
+   memory:'Chunk it as (R\' U2 R U2 R\')(F R U R\' U\' R\' F\')(R2 U\') — three families of moves back to back.'},
+  {id:'pll-ja', name:'Ja', group:'Corner + Edge', kind:'Adjacent swap', playable:true,
+   recognition:'A corner and an adjacent edge swap on the left side of the top layer.',
+   algorithm:"R' U L' U2 R U' R' U2 R L U'",
+   algs:["R' U L' U2 R U' R' U2 R L U'", "F2 L' U' r U2 l' U R' U' l2"],
+   why:'Alternates R and L moves to move pieces on both sides symmetrically toward their targets.',
+   memory:'"R-back, up, L-back, up-up" then mirror it: "right, up-back, right-back, up-up, right, left, up-back."'},
+  {id:'pll-jb', name:'Jb', group:'Corner + Edge', kind:'Adjacent swap (mirror)', playable:true,
+   recognition:'Mirror of Ja — swap happens on the right side instead.',
+   algorithm:"L U' R U2 L' U L U2 L' R' U",
+   algs:["L U' R U2 L' U L U2 L' R' U", "R U2 R' U' R U2 L' U R' U' L"],
+   why:'A clean mirror image of Ja, letter for letter.',
+   memory:'Learn Ja and Jb as a pair from day one — they are trained together almost universally.'},
+  {id:'pll-na', name:'Na', group:'Corner + Edge', kind:'Diagonal swap', playable:true,
+   recognition:'A corner and edge on opposite diagonals both need to swap — one of the trickier shapes to spot quickly.',
+   algorithm:"F' R U R' U' R' F R2 F U' R' U' R U F' R'",
+   algs:["F' R U R' U' R' F R2 F U' R' U' R U F' R'", "R' U R2 B2 U R' B2 R U' B2 R2 U' R"],
+   why:'Combines a sexy-move-based setup with an F-trigger insert, then a corrective ending to finish the diagonal cycle.',
+   memory:'Chunk it: (F\' R U R\' U\')(R\' F R2 F)(U\' R\' U\' R U)(F\' R\').'},
+  {id:'pll-nb', name:'Nb', group:'Corner + Edge', kind:'Diagonal swap (mirror)', playable:true,
+   recognition:'Mirror of Na.',
+   algorithm:"R' U R U' R' F' U' F R U R' F R' F' R U' R",
+   algs:["R' U R U' R' F' U' F R U R' F R' F' R U' R", "R U' R2 F2 U' R F2 R' U F2 R2 U R'"],
+   why:'A mirrored, reversed sibling of Na using the same building blocks.',
+   memory:'Pair with Na; if one feels backwards, you are probably thinking of the other.'},
+  {id:'pll-ra', name:'Ra', group:'Corner + Edge', kind:'Adjacent swap', playable:true,
+   recognition:'A corner and adjacent edge swap, with a distinctive single set of headlights visible.',
+   algorithm:"L U2 L' U2 L F' L' U' L U L F L2",
+   algs:["L U2 L' U2 L F' L' U' L U L F L2", "R U R' F' R U2 R' U2 R' F R U R U2 R'"],
+   why:'A sexy move into an F-trigger into a corrective ending — a shape you will recognize from several other cases by now.',
+   memory:'Chunk it in three pieces: the opening L U2 L\' U2 L, the F-trigger sandwich, then the L2 close.'},
+  {id:'pll-rb', name:'Rb', group:'Corner + Edge', kind:'Adjacent swap (mirror)', playable:true,
+   recognition:'Mirror of Ra.',
+   algorithm:"R' U2 R U2 R' F R U R' U' R' F' R2",
+   algs:["R' U2 R U2 R' F R U R' U' R' F' R2", "R2 F R U R U' R' F' R U2 R' U2 R"],
+   why:'A tight commutator built from R-trigger and F-trigger fragments, mirroring Ra.',
+   memory:'Pair with Ra; if one feels backwards, you are probably thinking of the other.'},
+  {id:'pll-t', name:'T', group:'Corner + Edge', kind:'Adjacent swap', playable:true,
+   recognition:'Two adjacent corners and two adjacent edges swap — one of the most recognizable shapes (a literal T on top).',
+   algorithm:"R U R' U' R' F R2 U' R' U' R U R' F'",
+   why:'Opens with a sexy move, pivots through an F-trigger sandwich, and closes with F\' to restore the front face.',
+   memory:'T-perm is usually the very first full PLL people learn because the shape is so visually distinct — lean on that visual memory.'},
+  {id:'pll-v', name:'V', group:'Corner + Edge', kind:'Diagonal swap', playable:true,
+   recognition:'A diagonal corner and edge swap with a distinctive V-shaped headlight pattern.',
+   algorithm:"R' U2 R U2 L U' R' U L' U L U' R U L'",
+   algs:["R' U2 R U2 L U' R' U L' U L U' R U L'", "R' U R' U' y R' F' R2 U' R' U R' F R F"],
+   why:'A pure R/U/L sequence — no wide turns or rotations needed to execute this one cleanly.',
+   memory:'Everything is plain R/U/L — no special moves to isolate here, just the rhythm.'},
+  {id:'pll-y', name:'Y', group:'Corner + Edge', kind:'Diagonal swap', playable:true,
+   recognition:'Mirror-family shape to V, but fully playable here since it avoids wide turns.',
+   algorithm:"F R U' R' U' R U R' F' R U R' U' R' F R F'",
+   why:'A long but pure R/U/F sequence — two F-triggers bookending a sexy-move-based middle section.',
+   memory:'Spot the F...F\' wrapper (same idea as several OLL cases) with a self-contained R-based cycle inside it.'},
+  {id:'pll-ga', name:'Ga', group:'G Permutations', kind:'Double adjacent swap', playable:true,
+   recognition:'A more complex double-swap pattern; G-perms are usually learned last since there are four similar-looking variants.',
+   algorithm:"R2 u R' U R' U' R u' R2 y' R' U R",
+   algs:["R2 u R' U R' U' R u' R2 y' R' U R", "l U2 R' r U r' F' D R U' R' D' R U' l'"],
+   why:'Uses wide u turns and a y whole-cube rotation — both fully supported here now.',
+   memory:'Most cubers learn all four G-perms (Ga–Gd) together as a themed set rather than individually.'},
+  {id:'pll-gb', name:'Gb', group:'G Permutations', kind:'Double adjacent swap', playable:true,
+   recognition:'A G-perm variant, mirror/rotation of Ga.',
+   algorithm:"R' d' F R2 u R' U R U' R u' R2",
+   algs:["R' d' F R2 u R' U R U' R u' R2", "l U R' D R U R' D' F r U' r' R U2 l'"],
+   why:'Also wide-turn and rotation based, same family as Ga.',
+   memory:'Save G-perms for after you\'re comfortable with everything else on this page — they reward practice more than cleverness.'},
+  {id:'pll-gc', name:'Gc', group:'G Permutations', kind:'Double adjacent swap', playable:true,
+   recognition:'A G-perm variant.',
+   algorithm:"R2 u' R U' R U R' u R2 y R U' R'",
+   algs:["R2 u' R U' R U R' u R2 y R U' R'", "l' U2 L' U l F' U' L U F R' F R"],
+   why:'Wide/rotation based, same family as Ga and Gb.',
+   memory:'Notice Gc mirrors Ga closely — learning them as a mirrored pair is efficient.'},
+  {id:'pll-gd', name:'Gd', group:'G Permutations', kind:'Double adjacent swap', playable:true,
+   recognition:'A G-perm variant.',
+   algorithm:"R U R' y' R2 u' R U' R' U R' u R2",
+   algs:["R U R' y' R2 u' R U' R' U R' u R2", "R' F' R F' U' L' U F l' U' L U2 l"],
+   why:'Wide/rotation based, the last of the G-perm family.',
+   memory:'The last of the four — once you know Ga–Gc, Gd tends to click quickly by pattern-matching.'}
+];
+
+const ALL_CASES = [
+  ...F2L_CASES.map(c=>({...c,section:'F2L'})),
+  ...OLL_CASES.map(c=>({...c,section:'OLL'})),
+  ...PLL_CASES.map(c=>({...c,section:'PLL'}))
+];
+// Tracks the order the case player's Prev/Next should follow — updated
+// every time a case grid is (re)rendered so navigation respects whatever
+// search/group filter you were browsing with.
+let currentCaseOrder = {F2L:[], OLL:[], PLL:[]};
+</script>
+
+<script>
+/* =========================================================================
+   NAVIGATION + SECTION SCAFFOLDING
+   ========================================================================= */
+const NAV = [
+  {group:'Learn', items:[
+    {id:'home', label:'Cube Fundamentals'},
+    {id:'notation', label:'Notation'},
+  ]},
+  {group:'CFOP', items:[
+    {id:'cross', label:'Cross'},
+    {id:'f2l', label:'F2L'},
+    {id:'oll', label:'OLL'},
+    {id:'pll', label:'PLL'},
+  ]},
+  {group:'Reference', items:[
+    {id:'triggers', label:'Common Triggers'},
+  ]},
+  {group:'Practice', items:[
+    {id:'scanner', label:'Scan Your Cube'},
+    {id:'trainer', label:'Algorithm Trainer'},
+    {id:'recognition', label:'Recognition Trainer'},
+    {id:'timer', label:'Scramble & Timer'},
+    {id:'dashboard', label:'Dashboard'},
+  ]}
+];
+
+function renderSidebar(){
+  const sb = document.getElementById('sidebar');
+  sb.innerHTML='';
+  const brand = el('div','brand',
+    '<div class="brand-row">'+
+      '<div class="brand-badge">AC</div>'+
+      '<div class="mark">Abhi<span>&rsquo;S Cube</span></div>'+
+      '<button class="sound-toggle-btn" type="button">'+(soundEnabled?'🔊':'🔇')+'</button>'+
+    '</div>'+
+    '<div class="tag">Understand the cube. Then solve it fast.</div>');
+  sb.appendChild(brand);
+  brand.querySelector('.sound-toggle-btn').onclick = ()=> setSoundEnabled(!soundEnabled);
+  NAV.forEach(group=>{
+    sb.appendChild(el('div','navgroup-title', group.group));
+    const g = el('div','navgroup');
+    group.items.forEach(item=>{
+      const it = el('div','navitem','<span class="dot"></span><span>'+item.label+'</span>');
+      it.dataset.id = item.id;
+      it.onclick=()=>{ showSection(item.id); if(window.innerWidth<=900) closeMobileSidebar(); };
+      g.appendChild(it);
+    });
+    sb.appendChild(g);
+  });
+}
+const CASE_LIST_IDS = ['f2l','oll','pll'];
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.navitem').forEach(n=>n.classList.toggle('active', n.dataset.id===id));
+  // F2L/OLL/PLL grids are rebuilt fresh on every visit (cheap now that
+  // thumbnails are lazy) so Learned/Practice pills set from the case player
+  // are never stale when you land back on the list.
+  if(CASE_LIST_IDS.includes(id)){ const cached = document.getElementById('sec-'+id); if(cached) cached.remove(); }
+  let sec = document.getElementById('sec-'+id);
+  if(!sec){ sec = buildSection(id); }
+  sec.classList.add('active');
+  // This page's shared-cube mounts were skipped while hidden (see
+  // isMountVisible) — bring them up to date now that they're visible again.
+  cubeMounts.forEach(m=>{ if(sec.contains(m)) renderCubeInto(m); });
+  window.scrollTo({top:0,behavior:'instant'});
+  progress.levelsSeen.add(id);
+}
+document.getElementById('menuBtn').onclick=()=>{
+  document.getElementById('sidebar').classList.contains('open') ? closeMobileSidebar() : openMobileSidebar();
+};
+function openMobileSidebar(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebarBackdrop').classList.add('show');
+  document.getElementById('menuBtn').setAttribute('aria-expanded','true');
+  document.body.classList.add('no-scroll');
+}
+function closeMobileSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarBackdrop').classList.remove('show');
+  document.getElementById('menuBtn').setAttribute('aria-expanded','false');
+  document.body.classList.remove('no-scroll');
+}
+document.getElementById('sidebarBackdrop').onclick=closeMobileSidebar;
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeMobileSidebar(); });
+// Swipe left/right anywhere on an open case page moves to the next/previous
+// case — the same gesture speedcubers already expect from flashcard apps.
+// Ignored while the drag actually starts on the 3D cube itself, so it never
+// fights with rotating the cube.
+(function setupCaseSwipe(){
+  let sx=0, sy=0, tracking=false;
+  document.addEventListener('touchstart', e=>{
+    const sec = document.getElementById('sec-case');
+    if(!sec || !sec.classList.contains('active') || e.target.closest('.cube3d-scene')){ tracking=false; return; }
+    const t=e.touches[0]; sx=t.clientX; sy=t.clientY; tracking=true;
+  }, {passive:true});
+  document.addEventListener('touchend', e=>{
+    if(!tracking) return;
+    tracking=false;
+    const t=e.changedTouches[0];
+    const dx=t.clientX-sx, dy=t.clientY-sy;
+    if(Math.abs(dx)<60 || Math.abs(dx)<Math.abs(dy)*1.5) return;
+    const sec = document.getElementById('sec-case');
+    const btn = sec && sec.querySelector(dx<0 ? '.case-player-next' : '.case-player-prev');
+    if(btn && !btn.disabled) btn.click();
+  }, {passive:true});
+})();
+
+function buildSection(id){
+  const main = document.getElementById('main');
+  const sec = el('section','section');
+  sec.id = 'sec-'+id;
+  main.appendChild(sec);
+  if(id==='home') buildHome(sec);
+  else if(id==='notation') buildNotation(sec);
+  else if(id==='cross') buildCrossSection(sec);
+  else if(id==='f2l') buildCaseSection(sec,'F2L Trainer','Pairing a corner with its matching edge and inserting both together — the move that separates the beginner method from real speedsolving. This covers the complete reference set of all '+F2L_CASES.length+' standard F2L cases, grouped by where the corner and edge sit before you solve them. Every case animates live below, including wide, slice and whole-cube-rotation moves.',F2L_CASES,'F2L');
+  else if(id==='oll') buildCaseSection(sec,'OLL — Orient Last Layer','Every algorithm below turns a mixed-up top face into one solid color, without worrying yet about whether pieces are in the right spot. This covers the complete set of all '+OLL_CASES.length+' official OLL cases, spanning every major shape family (OCLL, Fish, Knight-Move, W, Square, P, I, and more). Every algorithm has been mechanically checked against this app\'s own cube engine to confirm it only touches the last layer and leaves everything below it untouched — including wide, slice, and whole-cube-rotation moves, which all animate live. Several cases offer more than one algorithm to try.',OLL_CASES,'OLL');
+  else if(id==='pll') buildCaseSection(sec,'PLL — Permute Last Layer','All 21 standard cases, fully animated including slice and wide-turn moves. Many cases offer more than one algorithm — pick whichever fits your grip and try switching whenever you like.',PLL_CASES,'PLL');
+  else if(id==='triggers') buildTriggerReference(sec);
+  else if(id==='scanner') buildScanner(sec);
+  else if(id==='trainer') buildTrainer(sec);
+  else if(id==='recognition') buildRecognition(sec);
+  else if(id==='timer') buildTimerSection(sec);
+  else if(id==='dashboard') buildDashboard(sec);
+  return sec;
+}
+
+/* ---------- shared: cube panel factory ---------- */
+function makeCubePanel({withMovepad=true, withAlgo=null}={}){
+  const panel = el('div','cube-panel');
+  const wrap = el('div','cube-wrap');
+
+  const visual = el('div','cube-visual');
+  const toggleRow = el('div','view-toggle-row');
+  const toggle = el('div','view-toggle');
+  const btn3d = el('button','active','◆ 3D');
+  const btnNet = el('button',null,'▦ Net');
+  toggle.appendChild(btn3d); toggle.appendChild(btnNet);
+  const resetBtnV = el('button','reset-view-btn','↺');
+  resetBtnV.title='Reset view';
+  toggleRow.appendChild(toggle); toggleRow.appendChild(resetBtnV);
+  visual.appendChild(toggleRow);
+
+  const scene = el('div','');
+  const net = el('div','net');
+  net.style.display='none';
+  visual.appendChild(scene);
+  visual.appendChild(net);
+  const hint = el('div','drag-hint','drag to rotate the cube');
+  visual.appendChild(hint);
+  wrap.appendChild(visual);
+
+  // Moves made while a view is toggled off now skip animating/painting it
+  // (see isMountVisible) to save work — so switching back to it has to
+  // force one fresh paint to pick up whatever changed while it was hidden.
+  btn3d.onclick=()=>{ btn3d.classList.add('active'); btnNet.classList.remove('active'); scene.style.display=''; net.style.display='none'; hint.style.visibility='visible'; resetBtnV.style.visibility='visible'; renderCubeInto(scene); };
+  btnNet.onclick=()=>{ btnNet.classList.add('active'); btn3d.classList.remove('active'); net.style.display=''; scene.style.display='none'; hint.style.visibility='hidden'; resetBtnV.style.visibility='hidden'; renderCubeInto(net); };
+  resetBtnV.onclick=()=>{ if(scene._resetRotation) scene._resetRotation(); };
+
+  const controls = el('div','cube-controls');
+  wrap.appendChild(controls);
+  panel.appendChild(wrap);
+
+  const statusRow = el('div','btn-row');
+  const status = el('div','cube-status global-status'); status.textContent='Ready';
+  controls.appendChild(status);
+
+  if(withMovepad){
+    const pad = el('div','movepad');
+    ['U',"U'",'U2','D',"D'",'D2','F',"F'",'F2','B',"B'",'B2','L',"L'",'L2','R',"R'",'R2'].forEach(m=>{
+      const b = el('button', null, m);
+      b.onclick=()=>doMove(m);
+      pad.appendChild(b);
+    });
+    controls.appendChild(pad);
+    const row = el('div','btn-row');
+    const scrambleBtn = el('button','btn','🔀 Scramble');
+    scrambleBtn.onclick=()=>scrambleCube();
+    const resetBtn = el('button','btn','↺ Reset');
+    resetBtn.onclick=()=>resetCube();
+    const undoBtn = el('button','btn','⌫ Undo');
+    undoBtn.onclick=()=>{ if(cubeHistory.length){ const h=cubeHistory.slice(0,-1); cube=solvedState(); cubeHistory=[]; applyMovesSilently(h); renderCube(); updateCubeStatus(); } };
+    row.appendChild(scrambleBtn); row.appendChild(resetBtn); row.appendChild(undoBtn);
+    controls.appendChild(row);
+  }
+  registerCubeMount(scene,'cube3d');
+  registerCubeMount(net,'net');
+  return {panel, controls, status, net, scene};
+}
+
+/* Builds a moves-list display with its own Hide/Show toggle — used by every
+   place in the app that prints out an algorithm, so you can cover it up
+   and quiz yourself no matter where you're looking at a case. Also splits
+   the algorithm into color-coded chunks wherever a Common Trigger is
+   recognized, with a small tappable label right next to that chunk (jumps
+   to the full explanation on the Common Triggers page). Returns the
+   wrapper to insert, plus the underlying .mv spans in original move order
+   (for step-highlighting during playback) and a setHidden() so a "Play"
+   button can force it open. */
+function buildMovesDisplay(algorithm, {startHidden=false}={}){
+  const wrap = el('div');
+  const toggleRow = el('div','btn-row algo-toggle-row');
+  const toggleBtn = el('button','btn small','Hide algorithm');
+  toggleRow.appendChild(toggleBtn);
+
+  const tokens = parseAlg(algorithm);
+  const movesEl = el('div','moves moves-grouped');
+  const spans = [];
+  segmentAlgorithm(tokens).forEach(seg=>{
+    if(seg.trigger){
+      const group = el('span','mv-group');
+      group.style.setProperty('--trig-c', seg.trigger.color);
+      for(let k=0;k<seg.len;k++){
+        const s = el('span','mv', tokens[seg.start+k]);
+        group.appendChild(s);
+        spans.push(s);
+      }
+      movesEl.appendChild(group);
+      const labelBtn = el('span','trigger-inline-pill', seg.trigger.name);
+      labelBtn.style.setProperty('--trig-c', seg.trigger.color);
+      labelBtn.onclick = ()=>{
+        showSection('triggers');
+        setTimeout(()=>{
+          const target = document.getElementById('trigger-'+seg.trigger.id);
+          if(target){
+            target.scrollIntoView({behavior:'smooth',block:'start'});
+            target.classList.add('flash');
+            setTimeout(()=>target.classList.remove('flash'), 1600);
+          }
+        }, 60);
+      };
+      movesEl.appendChild(labelBtn);
+    } else {
+      for(let k=0;k<seg.len;k++){
+        const s = el('span','mv', tokens[seg.start+k]);
+        movesEl.appendChild(s);
+        spans.push(s);
+      }
+    }
+  });
+  const hint = el('div','algo-hide-hint','••• algorithm hidden — try to recall it, then tap "Show algorithm" •••');
+  let hidden = startHidden;
+  function apply(){
+    movesEl.classList.toggle('algo-hidden', hidden);
+    hint.classList.toggle('show', hidden);
+    toggleBtn.textContent = hidden ? 'Show algorithm' : 'Hide algorithm';
+  }
+  toggleBtn.onclick = ()=>{ hidden = !hidden; apply(); };
+  apply();
+  wrap.appendChild(toggleRow); wrap.appendChild(movesEl); wrap.appendChild(hint);
+  return { wrap, movesEl, spans, setHidden(v){ hidden=v; apply(); }, isHidden:()=>hidden };
+}
+
+function makeAlgoPlayer(algorithm, {name='Algorithm', why=null, playable=true, onSetup=null}={}){
+  const block = el('div','algo-block');
+  const header = el('div','algo-header');
+  header.appendChild(el('div','algo-name', name + (playable?'':' <span class="pill warn" style="margin-left:6px;">text only — uses moves not in playback</span>')));
+  const btnRow = el('div','btn-row');
+  header.appendChild(btnRow);
+  block.appendChild(header);
+
+  const movesDisplay = buildMovesDisplay(algorithm);
+  block.appendChild(movesDisplay.wrap);
+  const movesEl = movesDisplay.movesEl;
+  const caption = el('div','step-caption');
+  block.appendChild(caption);
+
+  if(playable){
+    const showBtn = el('button','btn small','Show this case');
+    const playBtn = el('button','btn small primary','▶ Play solution');
+    const slowBtn = el('button','btn small','Slow');
+    let speed = 550;
+    slowBtn.onclick=()=>{ speed = speed===550?1100:550; slowBtn.textContent = speed===550?'Slow':'Normal speed'; };
+    showBtn.onclick=()=>{
+      resetCube();
+      applyMovesSilently(parseAlg(inverseAlg(algorithm)));
+      renderCube();
+      updateCubeStatus();
+      caption.textContent = 'Cube set to this case — press "Play solution" to solve it.';
+    };
+    playBtn.onclick=async ()=>{
+      movesDisplay.setHidden(false);
+      const spans = movesDisplay.spans;
+      spans.forEach(s=>s.classList.remove('done','current'));
+      await playAlgorithm(algorithm, {speed, onStep:(i,total,mv)=>{
+        spans.forEach((s,k)=>{ s.classList.toggle('current',k===i); if(k<i) s.classList.add('done'); });
+        caption.textContent = 'Move '+(i+1)+' of '+total+': '+mv;
+        if(speakToggle.state.on) speakMove(mv);
+      }});
+      spans.forEach(s=>{s.classList.remove('current'); s.classList.add('done');});
+      caption.textContent = 'Done.';
+    };
+    const speakToggle = buildSpeakToggle();
+    btnRow.appendChild(showBtn); btnRow.appendChild(playBtn); btnRow.appendChild(slowBtn); btnRow.appendChild(speakToggle.row);
+  }
+
+  if(why){
+    const whyBtn = el('button','why-btn','WHY does this work?');
+    const whyPanel = el('div','why-panel');
+    whyPanel.innerHTML = (typeof why==='string')
+      ? '<p>'+why+'</p>'
+      : ['what','how','effect','pattern','memory'].filter(k=>why[k]).map(k=>
+          '<h4>'+({what:'What needs to happen',how:'How the moves do it',effect:'Effect — what moves, what\'s protected',pattern:'Pattern to notice',memory:'Memory trick'})[k]+'</h4><p>'+why[k]+'</p>').join('');
+    whyBtn.onclick=()=>whyPanel.classList.toggle('open');
+    block.appendChild(whyBtn);
+    block.appendChild(whyPanel);
+  }
+  return block;
+}
+
+/* ---------- Home ---------- */
+function buildHome(sec){
+  sec.innerHTML = '<div class="eyebrow">Start here</div><h1>Cube Fundamentals</h1>'+
+    '<p class="section-intro">A Rubik\'s Cube is 26 small pieces, not 54 stickers. Everything you learn from here on is built on recognizing 3 piece types and knowing how they move — so start with the live cube, not with algorithms.</p>';
+  const {panel} = makeCubePanel();
+  sec.appendChild(panel);
+
+  const grid = el('div','grid3');
+  grid.appendChild(el('div','card','<h3>Centers</h3><p>One sticker each, 6 total. Centers never travel to another face — they only spin in place. A face\'s center color is that face\'s permanent identity.</p>'));
+  grid.appendChild(el('div','card','<h3>Edges</h3><p>Two stickers each, 12 total. An edge can flip in place (swap which of its two stickers faces which way) without leaving its layer.</p>'));
+  grid.appendChild(el('div','card','<h3>Corners</h3><p>Three stickers each, 8 total. A corner can twist in place (rotate to show a different sticker upward) without changing which corner it is.</p>'));
+  sec.appendChild(grid);
+
+  const ex = el('div','card');
+  ex.innerHTML = '<h3>Try it — Piece Identification</h3><p>Scramble the cube above, then look at any single sticker. Count how many <i>different face colors</i> meet at that little block of plastic (peek at the stickers next to it on adjacent faces in the net). One color alone in the middle of a face = center. Two colors meeting = edge. Three colors meeting at a corner of the net = corner.</p>';
+  sec.appendChild(ex);
+
+  const mistakes = el('div','card');
+  mistakes.innerHTML = '<h3>Common Mistakes</h3>'+
+    '<div class="mistake">Rotating the <i>whole cube</i> by accident when you meant to turn one face — reorient carefully; the whole-cube view resets your reference points.</div>'+
+    '<div class="mistake">Assuming a piece is "the same" as one from a different face just because the colors look similar under some lighting — always check against the actual center colors.</div>';
+  sec.appendChild(mistakes);
+}
+
+/* ---------- Notation ---------- */
+function buildNotation(sec){
+  sec.innerHTML = '<div class="eyebrow">Level 1</div><h1>Notation</h1>'+
+    '<p class="section-intro">Every move has a one-letter name. Tap a move below, then press it on the live cube to watch the letter become a motion.</p>';
+  const {panel} = makeCubePanel();
+  sec.appendChild(panel);
+
+  const grid = el('div','grid3');
+  NOTATION.forEach(n=>{
+    const c = el('div','card');
+    c.innerHTML = '<h3 class="moves"><span class="mv">'+n.mv+'</span> — '+n.name+'</h3><p>'+n.desc+'</p>';
+    const btn = el('button','btn small','Try '+n.mv);
+    btn.onclick=()=>doMove(n.mv);
+    c.appendChild(btn);
+    grid.appendChild(c);
+  });
+  sec.appendChild(grid);
+
+  const adv = el('div','card');
+  adv.innerHTML = '<h3>Advanced notation (reference)</h3><p>Once the 18 basic turns are second nature, algorithms start using a few more symbols. These aren\'t animated in this app\'s live playback, but you\'ll see them written in some PLL/OLL cases below:</p>'+
+    '<ul><li><b>x, y, z</b> — rotate the <i>entire cube</i> in your hands, like R, U, or F respectively, but affecting every layer at once.</li>'+
+    '<li><b>M, E, S</b> — slice moves: the invisible middle layer, turned on its own, between L/R, U/D, or F/B.</li>'+
+    '<li><b>Wide moves (r, l, u, d, f, b — lowercase)</b> — turn two layers at once (the outer face plus the slice behind it).</li></ul>';
+  sec.appendChild(adv);
+}
+
+/* ---------- Beginner level ---------- */
+function buildCrossSection(sec){
+  const level = CROSS_SECTION;
+  sec.innerHTML = '<div class="eyebrow">CFOP</div><h1>'+level.title+'</h1>'+
+    '<p class="section-intro">'+level.concept+'</p>';
+  const {panel} = makeCubePanel();
+  sec.appendChild(panel);
+
+  if(level.points){
+    const card = el('div','card');
+    const list = el('ul');
+    list.style.paddingLeft='20px';
+    level.points.forEach(p=>{ const li=el('li'); li.innerHTML=p; li.style.marginBottom='8px'; li.style.fontSize='.92rem'; list.appendChild(li); });
+    card.appendChild(el('h3','', 'Concept'));
+    card.appendChild(list);
+    sec.appendChild(card);
+  }
+  if(level.mistakes){
+    const m = el('div','card');
+    m.appendChild(el('h3','','Common Mistakes'));
+    level.mistakes.forEach(txt=>m.appendChild(el('div','mistake',txt)));
+    sec.appendChild(m);
+  }
+
+  const nextBtn = el('button','btn primary', 'Continue to F2L →');
+  nextBtn.onclick=()=>showSection('f2l');
+  sec.appendChild(nextBtn);
+}
+
+/* ---------- Case sections (F2L / OLL / PLL) with search+filter ---------- */
+function buildCaseSection(sec, title, intro, cases, tag){
+  sec.innerHTML = '<div class="eyebrow">'+tag+'</div><h1>'+title+'</h1><p class="section-intro">'+intro+' Tap any case below to open its own page, with Prev/Next to move through the rest without hunting for the list again.</p>';
+
+  const filterBar = el('div','filterbar');
+  const search = document.createElement('input');
+  search.type='text'; search.placeholder='Search cases…';
+  filterBar.appendChild(search);
+  const groups = ['All', ...new Set(cases.map(c=>c.group).filter(Boolean))];
+  let activeGroup='All';
+  groups.forEach(g=>{
+    const chip = el('div','chip'+(g==='All'?' active':''), g);
+    chip.onclick=()=>{ activeGroup=g; filterBar.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); chip.classList.add('active'); renderList(); };
+    filterBar.appendChild(chip);
+  });
+  sec.appendChild(filterBar);
+
+  const list = el('div');
+  sec.appendChild(list);
+
+  function renderList(){
+    list.innerHTML='';
+    const q = search.value.trim().toLowerCase();
+    const filtered = cases.filter(c=> (activeGroup==='All'||c.group===activeGroup) && (!q || (c.name+' '+(c.recognition||'')).toLowerCase().includes(q)));
+    if(!filtered.length){ list.appendChild(el('p','dim','No cases match.')); currentCaseOrder[tag]=[]; return; }
+    // Always render grouped with headers, in category order, so cases stay
+    // organized by family whether "All" is selected or a single group filter is active.
+    // The same order drives the case player's Prev/Next.
+    const sorted = filtered.slice().sort((a,b)=> groups.indexOf(a.group)-groups.indexOf(b.group));
+    currentCaseOrder[tag] = sorted.map(c=>c.id);
+    let lastGroup = null, grid = null;
+    sorted.forEach(c=>{
+      if(c.group!==lastGroup){
+        list.appendChild(el('div','group-header', c.group||'Other'));
+        grid = el('div','case-grid');
+        list.appendChild(grid);
+        lastGroup=c.group;
+      }
+      grid.appendChild(buildCaseCard(c));
+    });
+  }
+  search.oninput = debounce(renderList);
+  renderList();
+}
+
+/* ---------- self-contained cube engine, one per opened case ----------
+   Reuses the same pure state/render primitives as the global cube (applyMove,
+   parseAlg, buildCube3DDOM, animateMove3D…) but keeps its own state and its
+   own mounts, so opening a case never touches the shared cube elsewhere in
+   the app and several cases could in principle be open at once. */
+function makeLocalCubeEngine(){
+  let state = solvedState();
+  let highlight = [];
+  let moveCount = 0;
+  let mounts = [];
+  let token = 0;
+  function paint(mEl,type){
+    if(!mEl.dataset.built){
+      if(type==='cube3d') buildCube3DDOM(mEl); else buildNetDOM(mEl);
+      mEl.dataset.built='1';
+    }
+    if(type==='cube3d'){
+      mEl.querySelectorAll('.cubie-sticker').forEach(s=>{
+        const f=s.dataset.face,i=+s.dataset.idx;
+        s.className='cubie-sticker col-'+state[f][i];
+        if(highlight.includes(f+i)) s.classList.add('hl');
+      });
+    } else {
+      mEl.querySelectorAll('[data-face]').forEach(s=>{
+        const f=s.dataset.face,i=+s.dataset.idx;
+        s.className='sticker col-'+state[f][i];
+        if(highlight.includes(f+i)) s.classList.add('hl');
+      });
+    }
+  }
+  function renderAll(){ mounts.forEach(m=>paint(m.el,m.type)); }
+  function mount(mEl,type){ mEl.dataset.type=type; mounts.push({el:mEl,type}); paint(mEl,type); return mEl; }
+  async function doMove(move){
+    const prev = state;
+    state = applyMove(state, move);
+    highlight = diffStickers(prev, state);
+    moveCount++;
+    playMoveSound(move);
+    await Promise.all(mounts.map(m=> m.type==='cube3d'
+      ? animateMove3D(m.el, move).then(()=>paint(m.el,m.type))
+      : (paint(m.el,m.type), Promise.resolve())));
+  }
+  function reset(){ state=solvedState(); highlight=[]; moveCount=0; renderAll(); }
+  function setupCase(algorithm){
+    state = solvedState(); highlight=[]; moveCount=0;
+    parseAlg(inverseAlg(algorithm)).forEach(m=>{ state = applyMove(state, m); });
+    renderAll();
+  }
+  async function playAlgorithm(algStr, {speed=550, onStep}={}){
+    const my = ++token;
+    const moves = parseAlg(algStr);
+    for(let i=0;i<moves.length;i++){
+      if(my!==token) return;
+      await doMove(moves[i]);
+      if(onStep) onStep(i, moves.length, moves[i]);
+      await sleep(speed);
+    }
+  }
+  return { mount, doMove, reset, setupCase, playAlgorithm,
+    get state(){return state;}, get moveCount(){return moveCount;} };
+}
+
+function buildWhyPanel(why){
+  const box = el('div');
+  const whyBtn = el('button','why-btn','WHY does this work?');
+  const whyPanel = el('div','why-panel');
+  whyPanel.innerHTML = (typeof why==='string')
+    ? '<p>'+why+'</p>'
+    : ['what','how','effect','pattern','memory'].filter(k=>why[k]).map(k=>
+        '<h4>'+({what:'What needs to happen',how:'How the moves do it',effect:'Effect — what moves, what\'s protected',pattern:'Pattern to notice',memory:'Memory trick'})[k]+'</h4><p>'+why[k]+'</p>').join('');
+  whyBtn.onclick=()=>whyPanel.classList.toggle('open');
+  box.appendChild(whyBtn); box.appendChild(whyPanel);
+  return box;
+}
+
+/* Builds the revealed content of a case: its own interactive cube (drag to
+   rotate), a move pad for playing moves yourself, and a speed control for
+   the auto-play of the solution — all scoped to this one case. */
+/* For OLL/PLL, shows the *reverse* of the algorithm — i.e. the moves that
+   scramble a solved cube into this exact case — so you can set up your own
+   physical cube to drill recognition and execution, not just watch it
+   happen in the 3D view. Not shown for F2L, where "the case" is really
+   about the state of a slot mid-solve rather than a standalone scramble
+   you'd want to set up from a solved cube. */
+function buildSetupAlgPanel(c, alg){
+  const panel = el('div','card setup-alg-panel');
+  panel.appendChild(el('h3','','Set up this case on your own cube'));
+  panel.appendChild(el('p','dim','From a solved cube, turn through these moves to scramble into this exact '+c.section+' case — useful for drilling recognition and execution on a physical cube, not just this app\'s 3D one.'));
+  const setupDisplay = buildMovesDisplay(inverseAlg(alg||c.algorithm));
+  panel.appendChild(setupDisplay.wrap);
+  return panel;
+}
+
+function buildCaseInteractive(c){
+  const wrap = el('div','case-cube-panel');
+  const algs = (c.algs && c.algs.length) ? c.algs : [c.algorithm];
+  let algIdx = 0;
+
+  const engine = makeLocalCubeEngine();
+  const cwrap = el('div','cube-wrap');
+
+  const visual = el('div','cube-visual');
+  const scene = el('div');
+  visual.appendChild(scene);
+  visual.appendChild(el('div','drag-hint','drag to rotate the cube'));
+  cwrap.appendChild(visual);
+  engine.mount(scene,'cube3d');
+
+  const controls = el('div','cube-controls');
+  const status = el('div','cube-status','Ready');
+  controls.appendChild(status);
+  function refreshStatus(){
+    const solved = isSolved(engine.state);
+    status.textContent = solved ? 'Solved ✓' : (engine.moveCount ? engine.moveCount+' moves from start' : 'Ready');
+    status.classList.toggle('solved', solved);
+  }
+
+  // Move pad sits right under the cube (and its Solved/status line) so it's
+  // the first thing your thumb reaches — no scrolling past the algorithm
+  // and buttons just to turn a face yourself.
+  controls.appendChild(el('div','dim','Or turn faces yourself:'));
+  const pad = el('div','movepad case-movepad');
+  ['U',"U'",'U2','D',"D'",'D2','F',"F'",'F2','B',"B'",'B2','L',"L'",'L2','R',"R'",'R2'].forEach(m=>{
+    const b = el('button', null, m);
+    b.onclick=async ()=>{ if(playing) return; await engine.doMove(m); refreshStatus(); };
+    pad.appendChild(b);
+  });
+  controls.appendChild(pad);
+
+  // If a case has more than one known algorithm, show a small picker so the
+  // player can try each one — clicking a pill swaps which algorithm is
+  // displayed, set up, and animated by "Show & Solve" below.
+  let algPicker = null;
+  if(algs.length>1){
+    algPicker = el('div','btn-row alg-picker'); algPicker.style.margin='10px 0 0'; algPicker.style.flexWrap='wrap';
+    algPicker.appendChild(el('span','dim','Algorithm: '));
+    algs.forEach((a,i)=>{
+      const b = el('button','btn small'+(i===0?' primary':''), 'Alg '+(i+1));
+      b.onclick=()=>{ if(playing) return; selectAlg(i); };
+      algPicker.appendChild(b);
+    });
+    controls.appendChild(algPicker);
+  }
+
+  let movesDisplay = buildMovesDisplay(algs[algIdx]);
+  movesDisplay.wrap.style.margin='10px 0 4px';
+  let spans = movesDisplay.spans;
+  const movesHolder = el('div');
+  movesHolder.appendChild(movesDisplay.wrap);
+  controls.appendChild(movesHolder);
+  const caption = el('div','step-caption');
+  controls.appendChild(caption);
+
+  const btnRow = el('div','btn-row'); btnRow.style.marginTop='6px';
+  const setupBtn = el('button','btn small','Show this case');
+  const solveBtn = el('button','btn small primary','▶ Show & Solve');
+  const resetBtn = el('button','btn small','↺ Reset');
+  btnRow.appendChild(setupBtn); btnRow.appendChild(solveBtn); btnRow.appendChild(resetBtn);
+  controls.appendChild(btnRow);
+
+  const SPEEDS = [{ms:1400,label:'Very slow'},{ms:900,label:'Slow'},{ms:550,label:'Normal'},{ms:320,label:'Fast'},{ms:180,label:'Very fast'}];
+  let speedIdx = 2;
+  const speedRow = el('div','speed-row');
+  const speedLabel = el('span','speed-label','Speed: '+SPEEDS[speedIdx].label);
+  const speedInput = document.createElement('input');
+  speedInput.type='range'; speedInput.min='0'; speedInput.max='4'; speedInput.step='1'; speedInput.value=String(speedIdx);
+  speedInput.oninput=()=>{ speedIdx=+speedInput.value; speedLabel.textContent='Speed: '+SPEEDS[speedIdx].label; };
+  speedRow.appendChild(speedLabel); speedRow.appendChild(speedInput);
+  const speakToggle = buildSpeakToggle();
+  speedRow.appendChild(speakToggle.row);
+  controls.appendChild(speedRow);
+
+  let setupPanel = (c.section==='OLL' || c.section==='PLL') ? buildSetupAlgPanel(c, algs[algIdx]) : null;
+
+  function selectAlg(i){
+    algIdx = i;
+    if(algPicker) [...algPicker.querySelectorAll('button')].forEach((b,k)=>b.classList.toggle('primary', k===i));
+    movesHolder.innerHTML='';
+    movesDisplay = buildMovesDisplay(algs[algIdx]);
+    movesDisplay.wrap.style.margin='10px 0 4px';
+    spans = movesDisplay.spans;
+    movesHolder.appendChild(movesDisplay.wrap);
+    if(setupPanel){
+      const fresh = buildSetupAlgPanel(c, algs[algIdx]);
+      setupPanel.replaceWith(fresh);
+      setupPanel = fresh;
+    }
+    resetBtn.onclick();
+  }
+
+  setupBtn.onclick=()=>{
+    if(playing) return;
+    engine.setupCase(algs[algIdx]);
+    spans.forEach(s=>s.classList.remove('done','current'));
+    caption.textContent = 'Cube set to this case — see if you recognize it, then press "Show & Solve".';
+    refreshStatus();
+  };
+  resetBtn.onclick=()=>{
+    if(playing) return;
+    engine.reset();
+    spans.forEach(s=>s.classList.remove('done','current'));
+    caption.textContent = '';
+    solveBtn.textContent = '▶ Show & Solve';
+    refreshStatus();
+  };
+  let playing = false;
+  async function showAndSolve(){
+    if(playing) return;
+    playing = true;
+    movesDisplay.setHidden(false);
+    solveBtn.disabled = true; setupBtn.disabled = true; resetBtn.disabled = true;
+    engine.setupCase(algs[algIdx]);
+    spans.forEach(s=>s.classList.remove('done','current'));
+    caption.textContent = 'Case set up — solving…';
+    await sleep(280);
+    await engine.playAlgorithm(algs[algIdx], {speed:SPEEDS[speedIdx].ms, onStep:(i,total,mv)=>{
+      spans.forEach((s,k)=>{ s.classList.toggle('current',k===i); if(k<i) s.classList.add('done'); });
+      caption.textContent = 'Move '+(i+1)+' of '+total+': '+mv;
+      if(speakToggle.state.on) speakMove(mv);
+      refreshStatus();
+    }});
+    spans.forEach(s=>{s.classList.remove('current'); s.classList.add('done');});
+    caption.textContent = 'Solved. Press "↻ Replay" to watch it again.';
+    solveBtn.textContent = '↻ Replay';
+    solveBtn.disabled = false; setupBtn.disabled = false; resetBtn.disabled = false;
+    playing = false;
+    refreshStatus();
+  }
+  solveBtn.onclick = showAndSolve;
+
+  cwrap.appendChild(controls);
+  wrap.appendChild(cwrap);
+  if(setupPanel) wrap.appendChild(setupPanel);
+  if(c.why) wrap.appendChild(buildWhyPanel(c.why));
+  refreshStatus();
+  return wrap;
+}
+
+/* A case tile is intentionally dumb: a thumbnail (lazy-built, see
+   buildCaseThumb), name, and status pills. Nothing interactive lives here —
+   clicking anywhere opens the dedicated case player, which is the only
+   place a case's cube engine actually gets built. */
+function buildCaseCard(c){
+  const card = el('div','case-card');
+  card.dataset.caseId = c.id;
+
+  const top = el('div','case-top');
+  top.appendChild(buildCaseThumb(c));
+  const info = el('div');
+  info.style.flex='1';
+  info.innerHTML = '<div class="case-title">'+c.name+(c.num?' <span class="dim" style="font-weight:400;">(ref. #'+c.num+')</span>':'')+'</div>'+
+    '<div class="case-sub">'+(c.group||'')+(c.kind?' · '+c.kind:'')+(c.diff?' · '+c.diff:'')+'</div>';
+  top.appendChild(info);
+
+  const pills = el('div','btn-row'); pills.style.alignItems='center'; pills.style.flexWrap='nowrap';
+  if(progress.learned.has(c.id)) pills.appendChild(el('span','pill good','Learned'));
+  if(progress.needsPractice.has(c.id)) pills.appendChild(el('span','pill on','Practice'));
+  pills.appendChild(el('span','case-open-arrow','→'));
+  top.appendChild(pills);
+  card.appendChild(top);
+
+  card.onclick=()=>openCasePlayer(c.id);
+  return card;
+}
+function refreshDashboardIfOpen(){ const d=document.getElementById('sec-dashboard'); if(d && d.classList.contains('active')){ d.remove(); showSection('dashboard'); } }
+
+/* =========================================================================
+   CASE PLAYER — one case at a time, full-screen-focused, with the case's
+   own interactive cube. Reuses the same sec-case DOM node for every case
+   instead of caching one section per case id, so a long practice session
+   never accumulates dozens of live cube engines in hidden DOM.
+   ========================================================================= */
+function findCase(id){ return ALL_CASES.find(c=>c.id===id); }
+function neighborCaseId(tag, id, dir){
+  const order = (currentCaseOrder[tag] && currentCaseOrder[tag].length)
+    ? currentCaseOrder[tag]
+    : ALL_CASES.filter(c=>c.section===tag).map(c=>c.id);
+  const idx = order.indexOf(id);
+  if(idx===-1) return null;
+  const n = idx+dir;
+  return (n>=0 && n<order.length) ? order[n] : null;
+}
+function openCasePlayer(id){
+  const c = findCase(id);
+  if(!c) return;
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.navitem').forEach(n=>n.classList.toggle('active', n.dataset.id===c.section.toLowerCase()));
+  let sec = document.getElementById('sec-case');
+  if(!sec){ sec = el('section','section'); sec.id='sec-case'; document.getElementById('main').appendChild(sec); }
+  sec.classList.add('active');
+  renderCasePlayer(sec, c);
+  window.scrollTo({top:0,behavior:'instant'});
+  progress.levelsSeen.add('case-'+c.id);
+}
+function backToCaseList(tag){
+  // Force a fresh rebuild so Learned/Practice pills picked up in the
+  // player are reflected the moment you land back on the grid.
+  const id = tag.toLowerCase();
+  const cached = document.getElementById('sec-'+id);
+  if(cached) cached.remove();
+  showSection(id);
+}
+function renderCasePlayer(sec, c){
+  sec.innerHTML='';
+
+  const order = (currentCaseOrder[c.section] && currentCaseOrder[c.section].length)
+    ? currentCaseOrder[c.section] : ALL_CASES.filter(x=>x.section===c.section).map(x=>x.id);
+  const pos = order.indexOf(c.id);
+  const prevId = neighborCaseId(c.section, c.id, -1);
+  const nextId = neighborCaseId(c.section, c.id, 1);
+
+  const topbar = el('div','case-player-top');
+  const backBtn = el('button','btn small','← '+c.section+' cases');
+  backBtn.onclick=()=>backToCaseList(c.section);
+  const titleWrap = el('div','case-player-title');
+  titleWrap.innerHTML = '<div class="case-player-crumb">'+c.section+(c.group?' · '+c.group:'')+
+    (pos!==-1?' <span class="case-player-count">'+(pos+1)+' / '+order.length+'</span>':'')+
+    '</div><h2>'+c.name+'</h2>';
+  const nav = el('div','case-player-nav');
+  const prevBtn = el('button','btn case-player-prev','‹ Prev'); prevBtn.disabled=!prevId;
+  prevBtn.onclick=()=>{ if(prevId) openCasePlayer(prevId); };
+  const nextBtn = el('button','btn primary case-player-next','Next ›'); nextBtn.disabled=!nextId;
+  nextBtn.onclick=()=>{ if(nextId) openCasePlayer(nextId); };
+  nav.appendChild(prevBtn); nav.appendChild(nextBtn);
+  topbar.appendChild(backBtn); topbar.appendChild(titleWrap); topbar.appendChild(nav);
+  sec.appendChild(topbar);
+
+  const wrap = el('div','case-player-wrap');
+
+  const markRow = el('div','case-player-progress-row');
+  const learnBtn = el('button','btn small'+(progress.learned.has(c.id)?' primary':''), progress.learned.has(c.id)?'✓ Learned':'Mark Learned');
+  const practiceBtn = el('button','btn small'+(progress.needsPractice.has(c.id)?' primary':''), progress.needsPractice.has(c.id)?'✓ Flagged':'Needs Practice');
+  learnBtn.onclick=()=>{
+    if(progress.learned.has(c.id)){progress.learned.delete(c.id);} else {progress.learned.add(c.id); progress.needsPractice.delete(c.id);}
+    learnBtn.className='btn small'+(progress.learned.has(c.id)?' primary':'');
+    learnBtn.textContent = progress.learned.has(c.id)?'✓ Learned':'Mark Learned';
+    practiceBtn.className='btn small'+(progress.needsPractice.has(c.id)?' primary':'');
+    practiceBtn.textContent = progress.needsPractice.has(c.id)?'✓ Flagged':'Needs Practice';
+    refreshDashboardIfOpen();
+  };
+  practiceBtn.onclick=()=>{
+    if(progress.needsPractice.has(c.id)){progress.needsPractice.delete(c.id);} else {progress.needsPractice.add(c.id); progress.learned.delete(c.id);}
+    practiceBtn.className='btn small'+(progress.needsPractice.has(c.id)?' primary':'');
+    practiceBtn.textContent = progress.needsPractice.has(c.id)?'✓ Flagged':'Needs Practice';
+    learnBtn.className='btn small'+(progress.learned.has(c.id)?' primary':'');
+    learnBtn.textContent = progress.learned.has(c.id)?'✓ Learned':'Mark Learned';
+    refreshDashboardIfOpen();
+  };
+  markRow.appendChild(learnBtn); markRow.appendChild(practiceBtn);
+  wrap.appendChild(markRow);
+
+  const detail = el('div','card');
+  detail.innerHTML = '<div class="kv"><b>Recognition</b>'+c.recognition+'</div>'+
+    (c.mistake?'<div class="mistake">'+c.mistake+'</div>':'');
+  wrap.appendChild(detail);
+
+  wrap.appendChild(buildCaseInteractive(c));
+  sec.appendChild(wrap);
+}
+// Left/Right arrow keys move between cases while the case player is open —
+// the same shortcut speedcubers already expect from flashcard-style tools.
+document.addEventListener('keydown', e=>{
+  if(e.target && /input|textarea/i.test(e.target.tagName)) return;
+  const sec = document.getElementById('sec-case');
+  if(!sec || !sec.classList.contains('active')) return;
+  if(e.key==='ArrowRight'){ const b=sec.querySelector('.case-player-next'); if(b && !b.disabled) b.click(); }
+  else if(e.key==='ArrowLeft'){ const b=sec.querySelector('.case-player-prev'); if(b && !b.disabled) b.click(); }
+});
+/* Jump from a Dashboard opportunity straight into its case player. */
+function jumpToCase(id){ openCasePlayer(id); }
+</script>
+
+<script>
+/* =========================================================================
+   TRAINER, RECOGNITION, TIMER, DASHBOARD
+   ========================================================================= */
+function buildTrainer(sec){
+  sec.innerHTML = '<div class="eyebrow">Practice</div><h1>Algorithm Trainer</h1>'+
+    '<p class="section-intro">Search across every case in this app. Hide the algorithm, try to recall it, then reveal to check yourself.</p>';
+  const {panel} = makeCubePanel();
+  sec.appendChild(panel);
+
+  const filterBar = el('div','filterbar');
+  const search = document.createElement('input'); search.type='text'; search.placeholder='Search all cases…';
+  filterBar.appendChild(search);
+  const sections = ['All','F2L','OLL','PLL','Needs practice','Learned'];
+  let active='All';
+  sections.forEach(s=>{
+    const chip = el('div','chip'+(s==='All'?' active':''), s);
+    chip.onclick=()=>{ active=s; filterBar.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); chip.classList.add('active'); render(); };
+    filterBar.appendChild(chip);
+  });
+  sec.appendChild(filterBar);
+  const list = el('div');
+  sec.appendChild(list);
+
+  function render(){
+    list.innerHTML='';
+    const q=search.value.trim().toLowerCase();
+    let items = ALL_CASES.filter(c=>{
+      if(active==='Needs practice') return progress.needsPractice.has(c.id);
+      if(active==='Learned') return progress.learned.has(c.id);
+      if(active!=='All') return c.section===active;
+      return true;
+    }).filter(c=> !q || (c.name+' '+c.section).toLowerCase().includes(q));
+    items.forEach(c=>{
+      const card = el('div','card');
+      card.innerHTML = '<div class="case-top"><div class="case-title">'+c.name+' <span class="pill">'+c.section+'</span></div></div>';
+      const hideWrap = el('div');
+      let revealed=false;
+      const moveHolder = el('div','moves');
+      function draw(){
+        moveHolder.innerHTML='';
+        if(revealed) parseAlg(c.algorithm).forEach(m=>moveHolder.appendChild(el('span','mv',m)));
+        else moveHolder.appendChild(el('span','dim','••• hidden — try to recall it, then reveal •••'));
+      }
+      draw();
+      const btnRow = el('div','btn-row'); btnRow.style.margin='8px 0';
+      const revealBtn = el('button','btn small','Reveal');
+      revealBtn.onclick=()=>{ revealed=!revealed; draw(); revealBtn.textContent = revealed?'Hide':'Reveal'; };
+      const easyBtn = el('button','btn small','Easy');
+      const practiceBtn = el('button','btn small','Needs Practice');
+      const hardBtn = el('button','btn small','Difficult');
+      easyBtn.onclick=()=>{ progress.learned.add(c.id); progress.needsPractice.delete(c.id); progress.difficult.delete(c.id); };
+      practiceBtn.onclick=()=>{ progress.needsPractice.add(c.id); progress.learned.delete(c.id); };
+      hardBtn.onclick=()=>{ progress.difficult.add(c.id); progress.needsPractice.add(c.id); progress.learned.delete(c.id); };
+      btnRow.appendChild(revealBtn); btnRow.appendChild(easyBtn); btnRow.appendChild(practiceBtn); btnRow.appendChild(hardBtn);
+      hideWrap.appendChild(moveHolder); hideWrap.appendChild(btnRow);
+      card.appendChild(hideWrap);
+      list.appendChild(card);
+    });
+    if(!items.length) list.appendChild(el('p','dim','Nothing here yet.'));
+  }
+  search.oninput = debounce(render);
+  render();
+}
+
+function buildRecognition(sec){
+  sec.innerHTML = '<div class="eyebrow">Practice</div><h1>Recognition Trainer</h1>'+
+    '<p class="section-intro">The cube is set to a random case. Pick which one it is before you\'d reach for an algorithm — recognition speed is what separates fast solvers from slow ones, more than move speed does.</p>';
+  const {panel} = makeCubePanel({withMovepad:false});
+  sec.appendChild(panel);
+  const visualEl = panel.querySelector('.cube-visual');
+  visualEl.style.position='relative';
+  const flashOverlay = el('div','flash-overlay');
+  flashOverlay.style.display='none';
+  flashOverlay.innerHTML = '<div>🧠 Recall the case…<div class="flash-count"></div></div>';
+  visualEl.appendChild(flashOverlay);
+  const flashCount = flashOverlay.querySelector('.flash-count');
+
+  // Section filter — matching real training, where you drill one family
+  // (F2L / OLL / PLL) at a time rather than guessing across unrelated stages.
+  const sections = ['All','F2L','OLL','PLL'];
+  let activeSection = 'All';
+  const filterBar = el('div','recog-filterbar');
+  sections.forEach(s=>{
+    const chip = el('button','recog-chip'+(s===activeSection?' active':''), s);
+    chip.onclick=()=>{ activeSection=s; [...filterBar.children].forEach(c=>c.classList.toggle('active',c.textContent===s)); newQuestion(); };
+    filterBar.appendChild(chip);
+  });
+  sec.appendChild(filterBar);
+
+  // Mode: Full view (cube stays visible, untimed lookup) vs Flash (a real
+  // glance-then-recall drill — the cube disappears after a short window and
+  // you pick from memory, which is much closer to recognizing mid-solve
+  // than staring at a static state).
+  let mode = 'full';
+  let flashMs = 1000;
+  const modeBar = el('div','recog-filterbar');
+  const modeChips = {};
+  ['Full view','Flash glance'].forEach(m=>{
+    const chip = el('button','recog-chip'+(m==='Full view'?' active':''), m);
+    chip.onclick=()=>{ mode = m==='Full view'?'full':'flash'; Object.values(modeChips).forEach(c=>c.classList.remove('active')); chip.classList.add('active'); durBar.style.display = mode==='flash'?'flex':'none'; newQuestion(); };
+    modeChips[m]=chip;
+    modeBar.appendChild(chip);
+  });
+  sec.appendChild(modeBar);
+
+  const durBar = el('div','recog-filterbar');
+  durBar.style.display='none';
+  [500,1000,1500].forEach(ms=>{
+    const chip = el('button','recog-chip'+(ms===flashMs?' active':''), (ms/1000)+'s');
+    chip.onclick=()=>{ flashMs=ms; durBar.querySelectorAll('.recog-chip').forEach(c=>c.classList.remove('active')); chip.classList.add('active'); newQuestion(); };
+    durBar.appendChild(chip);
+  });
+  sec.appendChild(durBar);
+
+  const quiz = el('div','card quiz-card');
+  sec.appendChild(quiz);
+  const statLine = el('p','dim');
+  sec.appendChild(statLine);
+
+  function pool(){
+    const base = ALL_CASES.filter(c=>c.playable!==false);
+    return activeSection==='All' ? base : base.filter(c=>c.section===activeSection);
+  }
+
+  function avgTime(){
+    if(!progress.recog.times.length) return null;
+    return progress.recog.times.reduce((a,b)=>a+b,0)/progress.recog.times.length;
+  }
+
+  function renderStats(){
+    const acc = progress.recog.attempts? Math.round(100*progress.recog.correct/progress.recog.attempts)+'%':'—';
+    const t = avgTime();
+    statLine.textContent = 'Session accuracy: '+progress.recog.correct+' / '+progress.recog.attempts+' ('+acc+')'+
+      (t!==null? '  ·  avg recognition time: '+t.toFixed(1)+'s' : '');
+  }
+  renderStats();
+
+  let qStart = null;
+  let flashTimer = null;
+  let flashTickInterval = null;
+  let questionToken = 0;
+
+  function newQuestion(){
+    const myToken = ++questionToken;
+    if(flashTimer){ clearTimeout(flashTimer); flashTimer=null; }
+    if(flashTickInterval){ clearInterval(flashTickInterval); flashTickInterval=null; }
+    quiz.innerHTML='';
+    flashOverlay.style.display='none';
+    const p = pool();
+    if(p.length<2){ quiz.appendChild(el('p','dim','Not enough playable cases in this filter yet.')); return; }
+    const correct = p[Math.floor(Math.random()*p.length)];
+    resetCube();
+    applyMovesSilently(parseAlg(inverseAlg(correct.algorithm)));
+    renderCube();
+    updateCubeStatus();
+
+    // Prefer wrong options from the SAME section as the correct answer —
+    // options plucked from other stages (e.g. an F2L name next to an OLL
+    // cube state) are trivially eliminable and don't actually test
+    // recognition of the pattern itself.
+    const sameSectionPool = p.filter(c=>c.section===correct.section);
+    const optionSourcePool = sameSectionPool.length>=4 ? sameSectionPool : p;
+    const options = new Set([correct.name]);
+    let guard=0;
+    while(options.size<Math.min(4,optionSourcePool.length) && guard<200){
+      options.add(optionSourcePool[Math.floor(Math.random()*optionSourcePool.length)].name);
+      guard++;
+    }
+    const opts = [...options].sort(()=>Math.random()-0.5);
+
+    if(mode==='flash'){
+      // Glance phase: cube visible, no options yet, counting down.
+      quiz.appendChild(el('h3','','Memorize the case… ('+correct.section+')'));
+      quiz.appendChild(el('p','dim','Options appear once the cube hides.'));
+      let remaining = flashMs/1000;
+      flashCount.textContent = remaining.toFixed(1)+'s';
+      flashTickInterval = setInterval(()=>{
+        remaining -= 0.1;
+        flashCount.textContent = Math.max(0,remaining).toFixed(1)+'s';
+        if(remaining<=0){ clearInterval(flashTickInterval); flashTickInterval=null; }
+      },100);
+      flashTimer = setTimeout(()=>{
+        if(myToken!==questionToken) return;
+        flashOverlay.style.display='flex';
+        renderQuizBody();
+      }, flashMs);
+    } else {
+      renderQuizBody();
+    }
+
+    function renderQuizBody(){
+      quiz.innerHTML='';
+      quiz.appendChild(el('h3','','Which case is this? ('+correct.section+')'));
+
+      // Hint: surfaces the same recognition cue an experienced solver relies
+      // on (piece pattern, not the algorithm) — separate from the answer, so
+      // using it still requires matching the description to the cube state.
+      const hintBtn = el('button','btn small','Show recognition hint');
+      const hintBox = el('div','hint-box');
+      hintBox.style.display='none';
+      hintBox.innerHTML = '<b>Look for:</b> '+(correct.recognition||'—');
+      let hintUsed=false;
+      hintBtn.onclick=()=>{ hintUsed=true; hintBox.style.display='block'; hintBtn.disabled=true; };
+      quiz.appendChild(hintBtn);
+      quiz.appendChild(hintBox);
+
+      const optWrap = el('div','quiz-options');
+      qStart = performance.now();
+      opts.forEach(name=>{
+        const b = el('button', null, name);
+        b.onclick=()=>{
+          const elapsed = (performance.now()-qStart)/1000;
+          progress.recog.attempts++;
+          progress.recog.times.push(elapsed);
+          const isRight = name===correct.name;
+          if(isRight) progress.recog.correct++;
+
+          const cs = progress.recog.byCase[correct.id] || (progress.recog.byCase[correct.id]={attempts:0,correct:0});
+          cs.attempts++;
+          if(isRight) cs.correct++;
+          // Auto-flag cases you're consistently missing so they surface on
+          // the Dashboard without needing to remember to flag them manually.
+          if(cs.attempts>=3 && cs.correct/cs.attempts<0.5) progress.needsPractice.add(correct.id);
+          else if(isRight && cs.attempts>=3 && cs.correct/cs.attempts>=0.8) progress.needsPractice.delete(correct.id);
+
+          hintBtn.disabled=true;
+          flashOverlay.style.display='none';
+          [...optWrap.children].forEach(btn=>{
+            if(btn.textContent===correct.name) btn.classList.add('correct');
+            else if(btn===b && !isRight) btn.classList.add('wrong');
+            btn.disabled=true;
+          });
+          renderStats();
+          const explain = el('div','card');
+          explain.style.marginTop='10px';
+          const tag = el('span','timer-chip', elapsed.toFixed(1)+'s'+(hintUsed?' · hint used':''));
+          explain.appendChild(tag);
+          explain.appendChild(makeAlgoPlayer(correct.algorithm,{name:correct.name+' — '+(correct.recognition||''), why:correct.why, playable:correct.playable!==false}));
+          const nextBtn = el('button','btn primary','Next case →');
+          nextBtn.onclick=newQuestion;
+          quiz.appendChild(explain);
+          quiz.appendChild(nextBtn);
+        };
+        optWrap.appendChild(b);
+      });
+      quiz.appendChild(optWrap);
+    }
+  }
+  newQuestion();
+}
+
+function buildTimerSection(sec){
+  sec.innerHTML = '<div class="eyebrow">Practice</div><h1>Scramble &amp; Timer</h1>'+
+    '<p class="section-intro">Generate a scramble, inspect, solve, and track your times for this session — ao5 and ao12 update automatically.</p>';
+  const {panel} = makeCubePanel({withMovepad:false});
+  sec.appendChild(panel);
+
+  const scrambleCard = el('div','card');
+  const scrambleText = el('div','moves');
+  scrambleCard.appendChild(el('h3','','Scramble'));
+  scrambleCard.appendChild(scrambleText);
+  const newScrambleBtn = el('button','btn primary','New Scramble');
+  newScrambleBtn.style.marginTop='10px';
+  newScrambleBtn.onclick=()=>{
+    const seq = scrambleCube();
+    scrambleText.innerHTML='';
+    seq.forEach(m=>scrambleText.appendChild(el('span','mv',m)));
+  };
+  scrambleCard.appendChild(newScrambleBtn);
+  sec.appendChild(scrambleCard);
+
+  const timerCard = el('div','card');
+  const display = el('div','timer-display','0.00');
+  timerCard.appendChild(display);
+  const controls = el('div','btn-row'); controls.style.justifyContent='center';
+  const startBtn = el('button','btn primary','Start');
+  const stopBtn = el('button','btn','Stop'); stopBtn.disabled=true;
+  const resetTBtn = el('button','btn','Reset session');
+  controls.appendChild(startBtn); controls.appendChild(stopBtn); controls.appendChild(resetTBtn);
+  timerCard.appendChild(controls);
+  const stats = el('div','timer-stats');
+  timerCard.appendChild(stats);
+  const timesWrap = el('div','times-list');
+  timerCard.appendChild(timesWrap);
+  sec.appendChild(timerCard);
+
+  let startTs=null, raf=null;
+  function tick(){ display.textContent = ((performance.now()-startTs)/1000).toFixed(2); raf=requestAnimationFrame(tick); }
+  startBtn.onclick=()=>{ startTs=performance.now(); tick(); startBtn.disabled=true; stopBtn.disabled=false; };
+  stopBtn.onclick=()=>{
+    cancelAnimationFrame(raf);
+    const t = (performance.now()-startTs)/1000;
+    progress.timesSolved.push(t);
+    startBtn.disabled=false; stopBtn.disabled=true;
+    renderTimes();
+  };
+  resetTBtn.onclick=()=>{ progress.timesSolved=[]; display.textContent='0.00'; renderTimes(); };
+
+  function avg(arr){ return arr.length? (arr.reduce((a,b)=>a+b,0)/arr.length):null; }
+  function aoN(n){
+    const arr = progress.timesSolved.slice(-n);
+    if(arr.length<n) return null;
+    const sorted=[...arr].sort((a,b)=>a-b);
+    const trimmed = sorted.slice(1,-1);
+    return avg(trimmed);
+  }
+  function fmt(v){ return v===null?'—':v.toFixed(2)+'s'; }
+  function renderTimes(){
+    const best = progress.timesSolved.length? Math.min(...progress.timesSolved):null;
+    stats.innerHTML = '<span>Best: '+fmt(best)+'</span><span>Mean: '+fmt(avg(progress.timesSolved))+'</span><span>ao5: '+fmt(aoN(5))+'</span><span>ao12: '+fmt(aoN(12))+'</span>';
+    timesWrap.innerHTML='';
+    progress.timesSolved.slice().reverse().forEach(t=> timesWrap.appendChild(el('span','time-chip', t.toFixed(2)+'s')));
+  }
+  renderTimes();
+}
+
+/* =========================================================================
+   COMMON TRIGGERS — reference page
+   ========================================================================= */
+const COMMON_TRIGGERS = [
+  {id:'sexy', name:'Sexy Move', moves:"R U R' U'", color:'91,141,239',
+    why:'The single most common fragment in the whole method — a small corner cycle that barely disturbs anything else. If you only memorize one trigger, make it this one.'},
+  {id:'sexy-inv', name:'Inverse Sexy Move', moves:"U R U' R'", color:'77,197,204',
+    why:'The sexy move read backwards and inverted — it undoes a sexy move, and turns up constantly as a setup or closing fragment.'},
+  {id:'sexy-left', name:'Left Sexy Move', moves:"L' U' L U", color:'100,181,246',
+    why:'The left-hand mirror of the sexy move, for whenever the working slot or trigger sits on the left side of the cube instead of the right.'},
+  {id:'sledge', name:'Sledgehammer', moves:"R' F R F'", color:'224,113,74',
+    why:'A corner-insertion trigger that tucks a piece under from the front — the second most common fragment after the sexy move.'},
+  {id:'sledge-inv', name:'Reverse Sledgehammer', moves:"F R' F' R", color:'235,140,52',
+    why:'The sledgehammer read backwards and inverted — the same idea, run in the opposite direction.'},
+  {id:'sledge-left', name:'Left Sledgehammer', moves:"L F' L' F", color:'214,96,54',
+    why:'The left-hand mirror of the sledgehammer.'},
+  {id:'sune', name:'Sune', moves:"R U R' U R U2 R'", color:'178,120,255',
+    why:'A complete corner-cycling algorithm in its own right (OLL 27), and also the seed that several longer OLL algorithms are built around.'},
+  {id:'antisune', name:'Anti-Sune', moves:"R' U' R U' R' U2 R", color:'214,90,180',
+    why:'The exact inverse of Sune — same idea, opposite direction.'},
+  {id:'sixmover', name:'Six-Mover', moves:"R U R' U R U' R'", color:'62,207,142',
+    why:'A slightly longer cousin of the sexy move that shows up as a self-contained fragment inside several OLL and F2L algorithms.'},
+  {id:'twrap', name:'T-Wrap', moves:"F R U R' U' F'", color:'245,185,66',
+    why:'A short "open the front, sexy move, close the front" wrap. It\'s the entire T-shape OLL algorithm by itself (OLL 45), and the same wrap shows up as a chunk inside several longer algorithms.'},
+];
+
+/* Splits an algorithm's move tokens into segments, tagging any that match a
+   Common Trigger verbatim (longest triggers checked first, so e.g. Sune
+   isn't mis-tagged as a plain sexy move). Consecutive untagged moves are
+   merged into one plain segment. Used to color-code and label algorithm
+   displays the way a good trigger-breakdown reference sheet would. */
+function segmentAlgorithm(tokens){
+  const sortedTriggers = COMMON_TRIGGERS.slice().sort((a,b)=> parseAlg(b.moves).length - parseAlg(a.moves).length);
+  const segments = [];
+  let i = 0;
+  while(i < tokens.length){
+    let found = null;
+    for(const trig of sortedTriggers){
+      const t = parseAlg(trig.moves);
+      if(i+t.length > tokens.length) continue;
+      let ok = true;
+      for(let j=0;j<t.length;j++){ if(tokens[i+j]!==t[j]){ ok=false; break; } }
+      if(ok){ found = {trigger:trig, len:t.length}; break; }
+    }
+    if(found){
+      segments.push({start:i, len:found.len, trigger:found.trigger});
+      i += found.len;
+    } else {
+      const last = segments[segments.length-1];
+      if(last && !last.trigger) last.len++;
+      else segments.push({start:i, len:1, trigger:null});
+      i++;
+    }
+  }
+  return segments;
+}
+
+function algContainsTrigger(algorithm, trigger){
+  const a = parseAlg(algorithm), t = parseAlg(trigger);
+  for(let i=0; i+t.length<=a.length; i++){
+    let ok = true;
+    for(let j=0; j<t.length; j++){ if(a[i+j]!==t[j]){ ok=false; break; } }
+    if(ok) return true;
+  }
+  return false;
+}
+
+function buildTriggerReference(sec){
+  sec.innerHTML = '<div class="eyebrow">Reference</div><h1>Common Triggers</h1>'+
+    '<p class="section-intro">These short move sequences ("triggers") are the building blocks that F2L, OLL, and PLL algorithms are made from. Learning to spot them inside a longer algorithm makes memorizing it far easier — and once they\'re second nature, you can often puzzle out an unfamiliar algorithm instead of having to look it up.</p>';
+
+  COMMON_TRIGGERS.forEach(trig=>{
+    const card = el('div','card');
+    card.id = 'trigger-'+trig.id;
+    card.appendChild(el('h3','', trig.name));
+    const md = buildMovesDisplay(trig.moves);
+    card.appendChild(md.wrap);
+    card.appendChild(el('p','dim', trig.why));
+
+    const matches = ALL_CASES.filter(c=> algContainsTrigger(c.algorithm, trig.moves));
+    const bySection = {F2L:[], OLL:[], PLL:[]};
+    matches.forEach(c=> bySection[c.section].push(c));
+
+    const usedWrap = el('div','trigger-used-wrap');
+    usedWrap.appendChild(el('div','dim', matches.length
+      ? 'Appears in '+matches.length+' of the '+ALL_CASES.length+' algorithms in this app:'
+      : 'Doesn\'t appear verbatim in any of this app\'s stored algorithms — it\'s still a real, commonly-taught trigger, just not a contiguous match in this particular set.'));
+    ['F2L','OLL','PLL'].forEach(sectionName=>{
+      const list = bySection[sectionName];
+      if(!list.length) return;
+      const row = el('div','trigger-used-row');
+      row.appendChild(el('span','pill', sectionName+' · '+list.length));
+      const chipsWrap = el('div','trigger-chip-wrap');
+      list.forEach(c=>{
+        const chip = el('span','chip trigger-case-chip', c.name);
+        chip.onclick=()=>openCasePlayer(c.id);
+        chipsWrap.appendChild(chip);
+      });
+      row.appendChild(chipsWrap);
+      usedWrap.appendChild(row);
+    });
+    card.appendChild(usedWrap);
+    sec.appendChild(card);
+  });
+}
+
+function buildDashboard(sec){
+  sec.innerHTML = '<div class="eyebrow">Your Progress</div><h1>Dashboard</h1>'+
+    '<p class="section-intro">A simple snapshot of this session — nothing gamified, just where you stand.</p>';
+  const stat = (num,label)=> { const c=el('div','stat-card'); c.innerHTML='<div class="stat-num">'+num+'</div><div class="stat-label">'+label+'</div>'; return c; };
+  const grid = el('div','stat-grid');
+  grid.appendChild(stat(progress.levelsSeen.size, 'Lessons visited'));
+  grid.appendChild(stat(progress.learned.size, 'Algorithms learned'));
+  grid.appendChild(stat(progress.needsPractice.size, 'Opportunities flagged'));
+  const acc = progress.recog.attempts? Math.round(100*progress.recog.correct/progress.recog.attempts)+'%':'—';
+  grid.appendChild(stat(acc, 'Recognition accuracy'));
+  const rTimes = progress.recog.times;
+  const avgRecogT = rTimes.length? (rTimes.reduce((a,b)=>a+b,0)/rTimes.length).toFixed(1)+'s':'—';
+  grid.appendChild(stat(avgRecogT, 'Avg. recognition time'));
+  sec.appendChild(grid);
+
+  const grid2 = el('div','stat-grid');
+  const best = progress.timesSolved.length? Math.min(...progress.timesSolved).toFixed(2)+'s':'—';
+  const meanT = progress.timesSolved.length? (progress.timesSolved.reduce((a,b)=>a+b,0)/progress.timesSolved.length).toFixed(2)+'s':'—';
+  grid2.appendChild(stat(progress.timesSolved.length,'Solves this session'));
+  grid2.appendChild(stat(best,'Best time'));
+  grid2.appendChild(stat(meanT,'Average time'));
+  grid2.appendChild(stat(progress.sessions,'Session count'));
+  sec.appendChild(grid2);
+
+  const oppCard = el('div','card opportunities-card');
+  oppCard.appendChild(el('h3','','🎯 Opportunities to Improve'));
+  if(progress.needsPractice.size){
+    oppCard.appendChild(el('p','dim','Cases you\'ve flagged, ranked by where your recognition accuracy says the gap actually is.'));
+    const items = [...progress.needsPractice]
+      .map(id=>{
+        const c = ALL_CASES.find(c=>c.id===id);
+        const stats = progress.recog.byCase[id];
+        const acc = (stats && stats.attempts) ? Math.round(100*stats.correct/stats.attempts) : null;
+        return c ? {c, acc} : null;
+      })
+      .filter(Boolean)
+      .sort((a,b)=>{
+        if(a.acc===null && b.acc===null) return 0;
+        if(a.acc===null) return 1;
+        if(b.acc===null) return -1;
+        return a.acc-b.acc;
+      });
+    const list = el('div','opportunity-list');
+    items.forEach(({c,acc})=>{
+      const row = el('div','opportunity-row');
+      const main = el('div','opportunity-main');
+      main.innerHTML = '<div class="opportunity-name">'+c.name+'</div>'+
+        '<div class="opportunity-sub">'+(c.section||'')+(c.recognition?' · '+c.recognition:'')+'</div>';
+      row.appendChild(main);
+      const right = el('div','opportunity-right');
+      if(acc!==null) right.appendChild(el('span','pill '+(acc<50?'warn':'on'), acc+'% recognition'));
+      const goBtn = el('button','btn small primary','Practice this case →');
+      goBtn.onclick=()=>jumpToCase(c.id);
+      right.appendChild(goBtn);
+      row.appendChild(right);
+      list.appendChild(row);
+    });
+    oppCard.appendChild(list);
+  } else {
+    oppCard.appendChild(el('p','dim','Nothing flagged yet — mark a case "Needs Practice" from F2L, OLL, or PLL, or keep drilling Recognition and your weakest cases will surface here on their own.'));
+  }
+  sec.appendChild(oppCard);
+}
+
+/* =========================================================================
+   SCAN YOUR CUBE — photo-based case recognition
+   Best-effort, on-device only (no photos ever leave the browser). Works by
+   letting you drag a handful of dots onto the stickers in your photo, then
+   comparing the colors it samples there against every playable OLL/PLL
+   case's real solved-from-scrambled fingerprint (computed with this app's
+   own cube engine via computeCaseState/inverseAlg — the exact same code
+   path the case pages use, not a separate guess).
+   ========================================================================= */
+let scanCaseIndex = null;
+function buildScanCaseIndex(){
+  if(scanCaseIndex) return scanCaseIndex;
+  const ringIdx = [0,1,2,5,8,7,6,3]; // clockwise around the U face, skipping the center
+  const oll = OLL_CASES.filter(c=>c.playable).map(c=>{
+    const state = computeCaseState(c);
+    return {case:c, pattern: ringIdx.map(i=>state.U[i]==='U')};
+  });
+  // PLL: rather than asking the person to identify which physical face is
+  // "front" or "right" (a cube has no such marking), the two dot groups
+  // (A and B) just mean "whichever two adjacent last-layer faces you can
+  // see, left one first." The 4 rotations below cover every possible
+  // starting angle (AUF) for that same left-to-right reading, which is all
+  // that's actually ambiguous once the dots are placed by the geometric
+  // rule shown in the instructions (A ends at the seam, B starts there).
+  const order = ['F','R','B','L'];
+  const pll = PLL_CASES.filter(c=>c.playable!==false).map(c=>{
+    const state = computeCaseState(c);
+    const rotations = [];
+    for(let r=0;r<4;r++){
+      const f1=order[r], f2=order[(r+1)%4];
+      rotations.push(state[f1].slice(0,3).concat(state[f2].slice(0,3)));
+    }
+    return {case:c, rotations};
+  });
+  scanCaseIndex = {oll, pll};
+  return scanCaseIndex;
+}
+
+function colorDist(a,b){
+  return Math.sqrt((a[0]-b[0])**2 + (a[1]-b[1])**2 + (a[2]-b[2])**2);
+}
+
+// Real cube photos have heavy lighting gradients (glare on one sticker,
+// shadow on the one next to it) which throws off plain RGB-distance
+// matching — the same red sticker can read as very different RGB values
+// depending on where the light hits it. Converting to HSV and comparing
+// mostly by hue (with a separate achromatic path for white) is much more
+// forgiving of that, since hue barely shifts with brightness.
+function rgbToHsv([r,g,b]){
+  r/=255; g/=255; b/=255;
+  const max=Math.max(r,g,b), min=Math.min(r,g,b), d=max-min;
+  let h=0;
+  if(d!==0){
+    if(max===r) h=((g-b)/d)%6;
+    else if(max===g) h=(b-r)/d+2;
+    else h=(r-g)/d+4;
+    h*=60; if(h<0) h+=360;
+  }
+  const s = max===0?0:d/max;
+  const v = max;
+  return [h,s,v];
+}
+function colorsMatch(a,b){
+  const [h1,s1,v1] = rgbToHsv(a);
+  const [h2,s2,v2] = rgbToHsv(b);
+  const bothPale = s1<0.22 && s2<0.22; // white stickers (and blown-out glare) read as low-saturation
+  if(bothPale) return Math.abs(v1-v2) < 0.28;
+  if(s1<0.22 || s2<0.22) return false; // one pale, one saturated — definitely different stickers
+  let dh = Math.abs(h1-h2); if(dh>180) dh = 360-dh;
+  return dh < 28;
+}
+
+const SCAN_LAYOUTS = {
+  oll: [
+    {key:'center', label:'C', x:50, y:50, center:true},
+    {key:'r0', label:'1', x:26, y:24},
+    {key:'r1', label:'2', x:50, y:18},
+    {key:'r2', label:'3', x:74, y:24},
+    {key:'r3', label:'4', x:82, y:50},
+    {key:'r4', label:'5', x:74, y:76},
+    {key:'r5', label:'6', x:50, y:82},
+    {key:'r6', label:'7', x:26, y:76},
+    {key:'r7', label:'8', x:18, y:50},
+  ],
+  pll: [
+    {key:'a0', label:'A1', x:12, y:48},
+    {key:'a1', label:'A2', x:26, y:62},
+    {key:'a2', label:'A3', x:40, y:76},
+    {key:'b0', label:'B1', x:60, y:76},
+    {key:'b1', label:'B2', x:74, y:62},
+    {key:'b2', label:'B3', x:88, y:48},
+  ]
+};
+
+function buildScanner(sec){
+  sec.innerHTML = '<div class="eyebrow">Practice</div><h1>Scan Your Cube</h1>'+
+    '<p class="section-intro">Snap a photo of your physical cube\'s last layer and this will suggest the closest matching OLL or PLL case and its algorithm — a shortcut while you\'re still building recognition speed, not a replacement for it. Everything happens on your device; the photo is never uploaded anywhere.</p>';
+
+  const card = el('div','card');
+  const modeRow = el('div','scan-modes');
+  let mode = 'oll';
+  const ollChip = el('div','chip active','Scan for OLL (top face)');
+  const pllChip = el('div','chip','Scan for PLL (2 side faces)');
+  modeRow.appendChild(ollChip); modeRow.appendChild(pllChip);
+  card.appendChild(modeRow);
+
+  const howTo = el('p','dim','');
+  card.appendChild(howTo);
+
+  const dropzone = el('div','scan-dropzone',
+    '<div style="font-size:1.6rem;">📷</div>'+
+    '<div style="font-weight:600;margin-top:6px;">Tap to take or upload a photo</div>'+
+    '<div class="dim" style="font-size:.82rem;margin-top:4px;">Good, even lighting helps a lot. Hold the last layer steady and fairly close.</div>'+
+    '<input type="file" accept="image/*">');
+  card.appendChild(dropzone);
+
+  const stageWrap = el('div'); stageWrap.style.textAlign='center';
+  card.appendChild(stageWrap);
+
+  const actionRow = el('div','btn-row'); actionRow.style.display='none'; actionRow.style.marginTop='10px';
+  const scanBtn = el('button','btn primary','Scan colors');
+  const resetBtn = el('button','btn','Retake photo');
+  actionRow.appendChild(scanBtn); actionRow.appendChild(resetBtn);
+  card.appendChild(actionRow);
+  const swatchHint = el('p','dim'); swatchHint.style.display='none'; swatchHint.style.marginTop='8px';
+  swatchHint.textContent = 'After scanning, each dot recolors to the exact color it read from your photo. If a dot doesn\'t match the sticker underneath it, drag it a little (maybe you\'re on a seam or catching glare) and scan again.';
+  card.appendChild(swatchHint);
+
+  const resultsWrap = el('div'); resultsWrap.style.marginTop='16px';
+  card.appendChild(resultsWrap);
+
+  sec.appendChild(card);
+
+  function updateHowTo(){
+    howTo.textContent = mode==='oll'
+      ? 'Hold the cube with the unsolved last layer facing straight up and photograph it from directly overhead, like looking down into a bowl. Drag the white dot onto the center sticker, and the 8 numbered dots onto the corner and edge stickers around it — the exact order doesn\'t matter, this checks every rotation.'
+      : 'Tilt the cube so you can see two side faces of the last layer at once (the classic "3/4 view") — any two next to each other work, there\'s no need to know which is which. Those two faces meet along a vertical line down the middle of your photo. Drag A1 onto the outer-left sticker of the left face\'s top row, then A2, then A3 nearest that shared middle line. Do the same on the right: B1 nearest the middle line, ending with B3 at the outer-right sticker. This checks every rotation of what you photograph, so any angle around the cube works.';
+  }
+  updateHowTo();
+
+  ollChip.onclick=()=>{ mode='oll'; ollChip.classList.add('active'); pllChip.classList.remove('active'); updateHowTo(); resetScan(); };
+  pllChip.onclick=()=>{ mode='pll'; pllChip.classList.add('active'); ollChip.classList.remove('active'); updateHowTo(); resetScan(); };
+
+  const fileInput = dropzone.querySelector('input');
+  dropzone.onclick = ()=> fileInput.click();
+  fileInput.onchange = e=>{ const f=e.target.files[0]; if(f) loadPhoto(f); };
+  ['dragover','dragleave','drop'].forEach(evt=>{
+    dropzone.addEventListener(evt, e=>{
+      e.preventDefault();
+      dropzone.classList.toggle('drag', evt==='dragover');
+      if(evt==='drop' && e.dataTransfer.files[0]) loadPhoto(e.dataTransfer.files[0]);
+    });
+  });
+
+  let canvas=null, ctx=null, dots={};
+
+  function loadPhoto(file){
+    const statusMsg = el('p','dim','Reading photo…');
+    stageWrap.innerHTML=''; stageWrap.appendChild(statusMsg);
+    actionRow.style.display='none'; swatchHint.style.display='none'; resultsWrap.innerHTML='';
+    const reader = new FileReader();
+    reader.onerror = ()=>{
+      statusMsg.textContent = 'Couldn\'t read that file. Try picking the photo again, or take a new one.';
+    };
+    reader.onload = ev=>{
+      const img = new Image();
+      img.onerror = ()=>{
+        statusMsg.textContent = 'This browser couldn\'t open that image (common with iPhone HEIC photos). Try a JPG/PNG — on iPhone, Settings → Camera → Formats → "Most Compatible" saves new photos as JPG, or just take a screenshot of the photo and scan that instead.';
+      };
+      img.onload = ()=>{
+        try{
+          const maxW = Math.min(460, sec.clientWidth-40 || 460);
+          const scale = Math.min(1, maxW/img.width);
+          const w = Math.round(img.width*scale), h = Math.round(img.height*scale);
+          if(!w || !h){ statusMsg.textContent = 'That image came through empty — please try a different photo.'; return; }
+          stageWrap.innerHTML='';
+          const stage = el('div','scan-stage');
+          stage.style.width = w+'px'; stage.style.height = h+'px';
+          canvas = document.createElement('canvas');
+          canvas.width=w; canvas.height=h;
+          ctx = canvas.getContext('2d', {willReadFrequently:true});
+          ctx.drawImage(img,0,0,w,h);
+          stage.appendChild(canvas);
+          dots={};
+          SCAN_LAYOUTS[mode].forEach(d=>{
+            const dot = el('div','scan-dot'+(d.center?' center':''), d.label);
+            dot.style.left = d.x+'%'; dot.style.top = d.y+'%';
+            dot.style.background = d.center ? '#fff' : 'var(--accent)';
+            makeDraggable(dot, stage);
+            stage.appendChild(dot);
+            dots[d.key]=dot;
+          });
+          stageWrap.appendChild(stage);
+          actionRow.style.display='flex';
+          swatchHint.style.display='block';
+          resultsWrap.innerHTML='';
+        } catch(err){
+          console.error('Scan photo setup failed', err);
+          stageWrap.innerHTML='';
+          stageWrap.appendChild(el('p','dim','Something went wrong setting up that photo ('+err.message+'). Try again with a different photo.'));
+        }
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function resetScan(){
+    stageWrap.innerHTML=''; actionRow.style.display='none'; swatchHint.style.display='none'; resultsWrap.innerHTML=''; canvas=null;
+  }
+  resetBtn.onclick = ()=>{ fileInput.value=''; resetScan(); };
+
+  function makeDraggable(dot, stage){
+    let dragging=false;
+    const move = (clientX, clientY)=>{
+      const r = stage.getBoundingClientRect();
+      let x = ((clientX-r.left)/r.width)*100, y=((clientY-r.top)/r.height)*100;
+      x = Math.max(0,Math.min(100,x)); y = Math.max(0,Math.min(100,y));
+      dot.style.left = x+'%'; dot.style.top = y+'%';
+    };
+    dot.addEventListener('pointerdown', e=>{ dragging=true; dot.setPointerCapture(e.pointerId); e.preventDefault(); });
+    dot.addEventListener('pointermove', e=>{ if(dragging) move(e.clientX,e.clientY); });
+    dot.addEventListener('pointerup', ()=>{ dragging=false; });
+    dot.addEventListener('pointercancel', ()=>{ dragging=false; });
+  }
+
+  function sampleDot(dot){
+    const x = Math.round(((parseFloat(dot.style.left))/100)*canvas.width);
+    const y = Math.round(((parseFloat(dot.style.top))/100)*canvas.height);
+    const size=16;
+    const sx=Math.max(0,x-size/2), sy=Math.max(0,y-size/2);
+    const sw=Math.min(size, canvas.width-sx), sh=Math.min(size, canvas.height-sy);
+    const data = ctx.getImageData(sx,sy,Math.max(1,sw),Math.max(1,sh)).data;
+    // Median per channel rather than mean — a stray row of blown-out glare
+    // or a shadow edge caught in the sample box skews an average a lot
+    // more than it skews a median.
+    const rs=[],gs=[],bs=[];
+    for(let i=0;i<data.length;i+=4){ rs.push(data[i]); gs.push(data[i+1]); bs.push(data[i+2]); }
+    const med = arr=>{ const s=arr.slice().sort((a,b)=>a-b); return s[Math.floor(s.length/2)]; };
+    return [med(rs), med(gs), med(bs)];
+  }
+
+  function paintSwatches(assignments){
+    // Color each dot to show exactly what was sampled there — if a dot
+    // looks nothing like the sticker it's sitting on, that's the sign to
+    // nudge it and rescan, rather than wonder why the match looks wrong.
+    assignments.forEach(([dot,color])=>{
+      dot.style.background = 'rgb('+color.map(Math.round).join(',')+')';
+      dot.style.borderColor = '#fff';
+    });
+  }
+
+  scanBtn.onclick = ()=>{
+    if(!canvas) return;
+    try{
+      const idx = buildScanCaseIndex();
+      resultsWrap.innerHTML='';
+      if(mode==='oll'){
+        const centerColor = sampleDot(dots.center);
+        const ringKeys = ['r0','r1','r2','r3','r4','r5','r6','r7'];
+        const ringColors = ringKeys.map(k=>sampleDot(dots[k]));
+        paintSwatches([[dots.center,centerColor], ...ringKeys.map((k,i)=>[dots[k],ringColors[i]])]);
+        const sample = ringColors.map(c=> colorsMatch(c, centerColor));
+        const scored = idx.oll.map(entry=>{
+          let best=-1;
+          for(let rot=0; rot<8; rot+=2){
+            let score=0;
+            for(let i=0;i<8;i++){ if(sample[i]===entry.pattern[(i+rot)%8]) score++; }
+            if(score>best) best=score;
+          }
+          return {case:entry.case, score:best, max:8};
+        });
+        if(!scored.length){ resultsWrap.appendChild(el('p','dim','No playable OLL cases were available to compare against — this shouldn\'t happen; please reload the page.')); return; }
+        renderScanResults(scored);
+      } else {
+        const keys = ['a0','a1','a2','b0','b1','b2'];
+        const colors = keys.map(k=>sampleDot(dots[k]));
+        paintSwatches(keys.map((k,i)=>[dots[k],colors[i]]));
+        const pairs=[]; for(let i=0;i<6;i++) for(let j=i+1;j<6;j++) pairs.push([i,j]);
+        const sampleEq = pairs.map(([i,j])=> colorsMatch(colors[i],colors[j]));
+        const scored = idx.pll.map(entry=>{
+          let best=-1;
+          entry.rotations.forEach(rotArr=>{
+            let score=0;
+            pairs.forEach(([i,j],pi)=>{
+              const eq = rotArr[i]===rotArr[j];
+              if(eq===sampleEq[pi]) score++;
+            });
+            if(score>best) best=score;
+          });
+          return {case:entry.case, score:best, max:pairs.length};
+        });
+        if(!scored.length){ resultsWrap.appendChild(el('p','dim','No playable PLL cases were available to compare against — this shouldn\'t happen; please reload the page.')); return; }
+        renderScanResults(scored);
+      }
+    } catch(err){
+      console.error('Scan failed', err);
+      resultsWrap.innerHTML='';
+      resultsWrap.appendChild(el('p','dim','Scanning hit an error ('+err.message+'). Try retaking the photo — if it keeps happening, this browser may be blocking pixel access on the photo (some strict privacy modes do this).'));
+    }
+  };
+
+  function renderScanResults(scored){
+    scored.sort((a,b)=>b.score-a.score);
+    const top = scored.slice(0,3);
+    resultsWrap.appendChild(el('h3','', 'Closest matches'));
+    resultsWrap.appendChild(el('p','dim','Not confident it nailed it? Check the next case or two below — they\'re ranked by how closely the colors lined up.'));
+    top.forEach((t,i)=>{
+      const pct = Math.round((t.score/t.max)*100);
+      const row = el('div','scan-result-card');
+      row.appendChild(el('div','scan-result-rank', '#'+(i+1)));
+      const info = el('div'); info.style.flex='1';
+      info.innerHTML = '<div class="case-title">'+t.case.name+' <span class="dim" style="font-weight:400;">('+t.case.group+')</span></div>'+
+        '<div class="dim" style="font-size:.8rem;margin-top:2px;">'+pct+'% color match</div>'+
+        '<div class="scan-confidence-bar"><div class="scan-confidence-fill" style="width:'+pct+'%;"></div></div>';
+      row.appendChild(info);
+      row.appendChild(el('span','case-open-arrow','→'));
+      row.onclick=()=>openCasePlayer(t.case.id);
+      resultsWrap.appendChild(row);
+    });
+  }
+}
+
+
+renderSidebar();
+showSection('home');
+const mobileSoundBtn = document.querySelector('.mobile-sound-toggle');
+if(mobileSoundBtn) mobileSoundBtn.onclick = ()=> setSoundEnabled(!soundEnabled);
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
+
